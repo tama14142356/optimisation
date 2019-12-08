@@ -1,0 +1,75 @@
+\documentclass[dvipdfmx,a4j]{jsarticle}
+\setlength {\textwidth} {46zw} %横43文字
+\setlength {\textheight} {46\baselineskip} %縦46行
+\setlength{\topmargin}{-2.5cm} %2.5cm詰める
+
+% パッケージと呼ばれるオプションをつける.
+\usepackage{color} %色のオプション
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{ascmac}
+\usepackage{amsmath,amssymb}
+\usepackage{enumerate}
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{here}
+\usepackage{bm}
+
+% ソースコードを貼る詳細設定
+\lstset{
+	%プログラム言語(複数の言語に対応，C,C++も可)
+ 	language = Python,
+ 	%枠外に行った時の自動改行
+ 	breaklines = true,
+ 	%自動開業後のインデント量(デフォルトでは20[pt])	
+ 	breakindent = 11pt,
+ 	%標準の書体
+ 	basicstyle = \ttfamily\small,
+ 	%basicstyle = {\small}
+ 	%コメントの書体
+	 commentstyle = {\itshape \color[cmyk]{1,0.4,1,0}},
+ 	%関数名等の色の設定
+ 	classoffset = 0,
+ 	%キーワード(int, ifなど)の書体
+ 	keywordstyle = {\bfseries \color[cmyk]{0,0.8,1,0}},
+ 	%""で囲まれたなどの"文字"の書体
+ 	stringstyle = {\ttfamily \color[rgb]{0,0,1}},
+ 	%枠 "t"は上に線を記載, "T"は上に二重線を記載
+	%他オプション：leftline，topline，bottomline，lines，single，shadowbox
+	frame={TB},
+ 	%frameまでの間隔(行番号とプログラムの間)
+ 	framesep = 5pt,
+ 	%行番号の位置
+ 	numbers = left,
+	%行番号の間隔
+ 	stepnumber = 1,
+	%右マージン
+ 	%xrightmargin=0zw,
+ 	%左マージン
+	%xleftmargin=3zw,
+	%行番号の書体
+ 	numberstyle = \tiny,
+	%タブの大きさ
+ 	tabsize = 4,
+ 	%キャプションの場所("tb"ならば上下両方に記載)
+ 	captionpos = t
+}
+
+\title{最適化と認識・学習}
+\author{}
+
+\begin{document}
+\maketitle 
+\section{導入}
+\input{introduction.tex}
+\section{回帰/分類とニュートン法, 勾配法}
+\input{koubai.tex}
+\section{ロジスティック回帰と勾配法}
+\input{rozisutec.tex}
+\section{線形識別と勾配法}
+\input{pattern.tex}
+\section{ニューラルネットワークと確率降下法}
+入力-出力の対($\mbox{\boldmath $x$},\ \mbox{\boldmath $y$}$)が大量に与えられば, 関数$y=f(x)$を精度よくもとめることができる.
+\section{情報圧縮と等式制約の最適化問題}
+\input{syueibunn.tex}  
+\end{document}
