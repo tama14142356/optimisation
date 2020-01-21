@@ -1,0 +1,1775 @@
+% \documentclass[dvipdfmx, a4paper, 11pt]{jsarticle}%A４用紙縦、明朝（デフォルト）１１ポイント
+\documentclass[dvipdfmx,titlepage, a4paper]{jsarticle}%A４用紙縦、明朝（デフォルト）１１ポイント
+\usepackage[top=14truemm,bottom=18truemm]{geometry}%余白調整
+\setlength{\textheight}{45\baselineskip}
+
+\setlength{\textwidth}{46zw}% ４６文字/行
+\usepackage{graphicx}
+\usepackage{listings, jlisting}%ソースコード表示のため(jlistingは日本語用listingsだけでは日本語表記がおかしくなるため)
+\usepackage{framed}%ただの囲み線を描く（文字の大きさ位置に関係なく、全体に枠線を描く）
+\usepackage{fancybox}%verbatim環境を枠線で囲むための下準備
+\usepackage{environ}%NewEnvironを使うためのもの
+\usepackage{varwidth}%枠線調整
+\usepackage{titlesec}%タイトル文字調整用
+\usepackage{url}%URL参考文献載せる用
+\usepackage{multirow}%表の縦結合のため
+\usepackage{here}% 強制的にコードの位置に図を挿入のため
+\usepackage{amsmath, amssymb}%underset therfore
+\usepackage{enumerate}%任意の番号を付けるためのもの\begin{enumerate}[(a)]みたいな感じで(a), (b)となる
+\usepackage{textcomp}%textlessなど
+\usepackage[T1]{fontenc}
+\usepackage{color} %色のオプション
+\usepackage{ascmac}
+\usepackage{tikz}
+\usetikzlibrary{intersections, calc,math,patterns}
+\usepackage{bm}
+\usepackage{threeparttable}
+
+%tikzpictureで使えるコマンド
+\newcommand{\myrectangle}[2]{\draw ($#1 + (-#2, -#2)$) rectangle ($#1 + (#2, #2)$)}
+\newcommand{\mytriangle}[2]{\draw ($#1 + (-#2*1.73 / 2, -#2 / 2)$) --++(0:1.73*#2) --++(120:1.73*#2) --cycle}
+%#1平均　#2分散 #3範囲 #4色 #5縦軸の縮尺
+\newcommand{\norm}[5]{\draw [#4, samples = 100, domain = #1 - #3:#1 + #3] plot(\x, {#5*exp(-pow(\x - #1, 2)/2/#2)/sqrt(2*pi*#2)})}
+%#1平均 #2分散 #3範囲指定することを想定しているが、色でもよし #4縮尺
+\newcommand{\normpdf}[4]{\draw [#3, samples = 100] plot(\x, {#4*exp(-pow(\x - #1, 2)/2/#2)/sqrt(2*pi*#2)})}
+
+%------------------------------------------------------------------------------------------------------------------
+\titleformat*{\section}{\normalsize\mcfamily}%章のタイトルの文字の大きさを通常サイズに設定（明朝体で）
+\titlespacing*{\section}{0pt}{*0}{0pt}%章番号の後の空白行の削除
+\titleformat*{\subsection}{\normalsize\mcfamily}%節のタイトルの文字の大きさを通常サイズに設定（明朝体で）
+\titlespacing*{\subsection}{0pt}{*0}{0pt}%節番号の後の空白行の削除
+\titleformat*{\subsubsection}{\normalsize\mcfamily}%小節のタイトルの文字の大きさを通常サイズに設定（明朝体で）
+\titlespacing*{\subsubsection}{0pt}{*0}{0pt}%小節番号の後の空白行の削除
+%------------------------------------------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------------------------------------------
+%ソースコードの枠線の設定(lstlistingの設定)
+\lstset{
+	%プログラム言語(複数の言語に対応，C,C++も可)
+	language = [77]Fortran,
+	%枠外に行った時の自動改行
+	breaklines = true,
+	%自動開業後のインデント量(デフォルトでは20[pt])	
+	breakindent = 11pt,
+	%標準の書体
+	basicstyle = \ttfamily\small,
+	%basicstyle = {\small}
+	%コメントの書体
+	commentstyle = {\itshape \color[cmyk]{1,0.4,1,0}},
+	%関数名等の色の設定
+	classoffset = 0,
+	%キーワード(int, ifなど)の書体
+	keywordstyle = {\bfseries \color[cmyk]{0,0.8,1,0}},
+	  %""で囲まれたなどの"文字"の書体
+	  stringstyle = {\ttfamily \color[rgb]{0,0,1}},
+	  %枠 "t"は上に線を記載, "T"は上に二重線を記載
+	  %他オプション：leftline，topline，bottomline，lines，single，shadowbox
+	  frame={TB},
+	  %frameまでの間隔(行番号とプログラムの間)
+	  framesep = 5pt,
+	  %行番号の位置
+	  % numbers = left,
+	  %行番号の間隔
+	  stepnumber = 1,
+	 %右マージン
+	 xrightmargin=0zw,
+	 %左マージン
+	 % xleftmargin=3zw,
+	 %行番号の書体
+	  numberstyle = \tiny,
+	  %タブの大きさ
+	  tabsize = 4,
+	  %空白を消す
+	  showstringspaces = {false},
+	  %キャプションの場所("tb"ならば上下両方に記載)
+	  captionpos = b
+	  }
+	  
+	  % \definecolor{myComment}{rgb}{0.0, 0.6, 0.0}       % コメントスタイル用の色設定
+	  % \definecolor{myKeyWord}{cmyk}{1.0, 0.0, 0.0, 0.3} % キーワードスタイル用の色設定
+ % \definecolor{myString}{cmyk}{0.0, 1.0, 0.0, 0.0}  % 文字列スタイル用の色設定
+ 
+ % % テキスト用（デフォルト）
+ % \lstdefinestyle{customText}{
+	 %     backgroundcolor  = {\color{white}},               % 背景色
+	 %     basicstyle       = {\footnotesize},               % コードの基本書式
+	 %     breaklines       = {true},                        % 途中で改行するかどうか
+	 %     commentstyle     = {\itshape  \color{myComment}}, % コメントのスタイル
+	 %     frame            = {shadowbox},                   % フレームの書式
+	 %     framesep         = {4pt},                         % ステップ幅
+	 %     keywordstyle     = {\bfseries \color{myKeyWord}}, % キーワードのスタイル
+	 %     lineskip         = {-0.5ex},                      % 行送り
+	 %     numbers          = {left},                        % 行番号の位置
+	 %     numberstyle      = {\footnotesize},               % 行番号のスタイル
+	 %     numbersep        = {1zw},                         % コードから行番号までの距離
+ %     showstringspaces = {false},                       % 文字列中における半角スペースの表示の有無
+ %     sensitive        = {true},                        % 忘れた
+ %     stepnumber       = {1},                           % 行番号のステップ幅
+ %     stringstyle      = {\ttfamily \color{myString}},  % 文字書式のスタイル
+ %     tabsize          = {2},                           % タブ幅
+ %     xleftmargin      = {2zw},                         % 左側の余白
+ %     xrightmargin     = {2zw}                          % 右側の余白
+ % }
+ % % C 言語用
+ % \lstdefinestyle{customC}{
+	 %     language         = {C},
+	 %     style            = {customText},
+	 %     morecomment      = [l]{//},                       % 行コメント
+	 %     morecomment      = [s]{/*}{*/},                   % 複数行コメント
+	 %     morecomment      = [n]{/*}{*/},                   % ネスト可能な複数行コメント
+ %     morestring       = [b]{"}
+ % }
+ % % Bash 用
+ % \lstdefinestyle{customBash}{
+	 %     language         = {bash},
+	 %     style            = {customText},
+	 %     morestring       = [b]{`}
+	 % }
+	 % % Fortran 用
+	 % \lstdefinestyle{customFortran}{
+	% 	language         = {[77]Fortran},
+	% 	style            = {customText}
+	% }
+	% \lstset{escapechar = , style = {customText}}
+	% \newcommand{\includeCode}[3][C]{\lstinputlisting[caption = {#3}, label = {src:#3}, escapechar = , style = custom#1]{#2}}
+		 
+%ソースコードから図に名前を変更
+\makeatletter
+\renewcommand{\lstlistingname}{図}
+\makeatother
+%------------------------------------------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------------------------------------------
+%章番号付きコード番号
+\makeatletter
+\AtBeginDocument{
+  \renewcommand*{\thelstlisting}{\arabic{section}.\arabic{lstlisting}}%
+  \@addtoreset{lstlisting}{section}
+}
+\makeatother
+
+%章番号付き表番号
+\makeatletter
+\renewcommand{\thetable}{
+\thesection.\arabic{table}
+}
+\@addtoreset{figure}{section}
+\makeatother
+
+%章番号付き図番号
+\makeatletter
+\renewcommand{\thefigure}{
+	\thesection.\arabic{figure}
+}
+\@addtoreset{figure}{section}
+\makeatother
+
+%章番号付き式番号
+\makeatletter
+\renewcommand{\theequation}{
+    \thesection.\arabic{equation}
+}
+\@addtoreset{equation}{section}
+\makeatother
+%------------------------------------------------------------------------------------------------------------------
+\renewcommand{\refname}{}%参考文献の文字を非表示にする
+
+\title{\Huge 最適化と認識・学習\\[10mm]}
+\author{{\LARGE 文殊の知恵}\\[1mm]高橋那弥}
+\date{}
+
+\begin{document}
+\tableofcontents % 目次
+\maketitle
+\section{一般的な制約付き最適化問題}
+この問題の定義は以下のようなものである。
+$X$を$R^{n}$の線形空間とし、$A$はその部分空間とする。\\
+また、$f(x), g_{k}(x), k = 1, ..., m$は$R^{n} \rightarrow R$の関数とする。
+ここで\\
+\begin{eqnarray*}
+	&&\mbox{\boldmath $x$} \in A\;\; \mbox{:設計変数}\\
+	&&g_{k}(x) \leq 0, \;\; k = 1, 2, \ldots, m \; \mbox{:制約条件}\\
+	\mbox{の下で}&&\\
+	&&f(x) \;\;\; \mbox{:目的関数}\\
+	&&\mbox{を最小化（あるいは最大化）する問題}
+\end{eqnarray*}
+\subsection{線形計画問題}
+制約付きの最適化問題で$f(x), g(x)$がともに以下のように線形関数の時、線形計画問題と呼ばれる。
+\begin{eqnarray*}
+	&&\mbox{\boldmath $x$} = (x_{i}), \, x_{i} \geq 0 \;\; \mbox{:設計変数}\\
+	&&g_{k}(x) = \mbox{\boldmath $w$}_{k}{}^{T}\mbox{\boldmath $x$} \leq \alpha_{k},\, \, \alpha_{k} \geq 0,  \;\; k = 1, 2, \ldots, m  \;\; \mbox{:制約条件}\\
+	\mbox{の下で}&&\\
+	&&f(x) = \mbox{\boldmath $c$}^{T}\mbox{\boldmath $x$} \;\;\; \mbox{:目的関数}\\
+	&&\mbox{を最小化（あるいは最大化）する問題}
+\end{eqnarray*}
+以下のような問題のことを表す。
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0);
+		\draw [white, domain = -1.2:8, name path = line] plot(\x, -\x / 2 + 11 / 2);
+		\draw [white, domain = -2:7.3, very thick, name path = line2] plot(\x, -\x/2 + 4);
+		\draw [white, domain = -2.2:6.3, very thick, name path = line3] plot(\x, -\x/2 + 5/2);
+		\draw [white, domain = -3:6, very thick, name path = line4] plot(\x, -\x/2 + 1);
+		\draw [white, domain = -4:5, very thick, name path = line5] plot(\x, -\x/2 - 1/2);
+		\draw [green!70!black, very thick, name path = vertical1] (-0.2, 7.1) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, name path = vert] (7.6, 3.2) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, domain = -0.2:7.6] plot(\x, -\x/2 + 7);
+		\draw [name intersections = {of = line and vertical1}]
+		(intersection-1) node (v1) {};
+		\draw [name intersections = {of = line and vert}]
+		(intersection-1) node (v2) {};
+		\draw [green!70!black, very thick, fill = green!70!black!60] ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- (7.6, 3.2) -- (-0.2, 7.1) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) --cycle;
+		\draw [name intersections = {of = line2 and vertical1}]
+		(intersection-1) node (v3) {};
+		\draw [name intersections = {of = line2 and vert}]
+		(intersection-1) node (v4) {};
+		\draw [green!70!black, fill = green!70!black!50, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line3 and vertical1}]
+		(intersection-1) node (v5) {};
+		\draw [name intersections = {of = line3 and vert}]
+		(intersection-1) node (v6) {};
+		\draw [green!70!black, fill = green!70!black!40, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line4 and vertical1}]
+		(intersection-1) node (v7) {};
+		\draw [name intersections = {of = line4 and vert}]
+		(intersection-1) node (v8) {};
+		\draw [green!70!black, fill = green!70!black!30, very thick] ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) --cycle;
+		\draw [name intersections = {of = line5 and vertical1}]
+		(intersection-1) node (v9) {};
+		\draw [name intersections = {of = line5 and vert}]
+		(intersection-1) node (v10) {};
+		\draw [green!70!black, fill = green!70!black!20, very thick] ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) -- ($(v10)!0.01cm!{atan(-1/2)}:(v9)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) --cycle;
+		\draw [fill = red!30] (O) -- ++(90:5cm) -- (3, 4) -- (5, 0) -- (O);
+		\draw [green!70!black] (v1) -- (v2);
+		\draw [green!70!black] (v3) -- (v4);
+		\draw [green!70!black] (v5) -- (v6);
+		\draw [green!70!black] (v7) -- (v8);
+		\draw [green!70!black] (v9) -- (v10);
+		\draw [help lines] (-2.2, -2.2) grid (5.7, 5.7);
+		\draw [->, very thick] (-2.2, 0) -- (5.7, 0);
+		\draw [->, very thick] (0, -2.2) -- (0, 5.7);
+		\draw [red!70!black, very thick, domain = -2:6] plot(\x, -\x / 3 + 5) node [below = 3] {\LARGE $\mbox{\boldmath $w$}_{2}{}^{T}\mbox{\boldmath $x$} = a_{2}$};
+		\draw [red!70!black, very thick, domain = 2:6] plot(\x, -2*\x + 10) node [left = 3] {\LARGE $\mbox{\boldmath $w$}_{1}{}^{T}\mbox{\boldmath $x$} = a_{1}$};
+		\draw [->, very thick, blue!70!black, domain = 0:3.5] plot(\x, 2*\x);
+		\draw [->, line width = 3pt, blue!70!black, domain = 0:1, text = black] plot(\x, 2*\x) node [right = 1.5] {\LARGE $\mbox{\boldmath $c$}$};
+		\draw [->, very thick, domain = 0:4] plot(\x, \x / 2) node [above] {\LARGE $a_{2}$};	
+		\draw [->, line width = 3pt, domain = 0:1.6, red!70!black, text = black] plot(\x, \x / 2) node [below=2] {\LARGE $\mbox{\boldmath $w_{1}$}$};
+		\draw [->, very thick, domain = 0:1.5] plot(\x, 3 * \x) node [above] {\LARGE $a_{1}$};
+		\draw [->, line width = 3pt, domain = 0:0.6, red!70!black, text = black] plot(\x, 3 * \x) node [left = 2] {\LARGE $\mbox{\boldmath $w_{2}$}$};
+		\draw (5, 6) node [above] {\LARGE ${\rm max} \, \mbox{\boldmath $c$}^{T}\mbox{\boldmath $x$}$};
+		\draw (5, 5) node [above] {\LARGE $s.t.\;\;\;\;\mbox{\boldmath $w$}_{i}{}^{T}\mbox{\boldmath $x$} \, \leq\, a_{i}$};
+	\end{tikzpicture}
+\end{center}
+\newpage
+\noindent 以下のような一般的な線形問題は適当な座標変換により、前図のような形式に変換できるので、ここでは、前図の場合を考える。
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0);
+		%=================================================================================================================================================================================================================================================================================
+		%緑の部分
+		\draw [white, domain = -1.2:8, name path = line] plot(\x, -\x / 2 + 11 / 2);
+		\draw [white, domain = -2:7.3, very thick, name path = line2] plot(\x, -\x/2 + 4);
+		\draw [white, domain = -2.2:6.3, very thick, name path = line3] plot(\x, -\x/2 + 5/2);
+		\draw [white, domain = -3:6, very thick, name path = line4] plot(\x, -\x/2 + 1);
+		\draw [white, domain = -4:5, very thick, name path = line5] plot(\x, -\x/2 - 1/2);
+		\draw [green!70!black, very thick, name path = vertical1] (-0.2, 7.1) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, name path = vert] (7.6, 3.2) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, domain = -0.2:7.6] plot(\x, -\x/2 + 7);
+		\draw [name intersections = {of = line and vertical1}]
+		(intersection-1) node (v1) {};
+		\draw [name intersections = {of = line and vert}]
+		(intersection-1) node (v2) {};
+		\draw [green!70!black, very thick, fill = green!70!black!60] ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- (7.6, 3.2) -- (-0.2, 7.1) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) --cycle;
+		\draw [name intersections = {of = line2 and vertical1}]
+		(intersection-1) node (v3) {};
+		\draw [name intersections = {of = line2 and vert}]
+		(intersection-1) node (v4) {};
+		\draw [green!70!black, fill = green!70!black!50, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line3 and vertical1}]
+		(intersection-1) node (v5) {};
+		\draw [name intersections = {of = line3 and vert}]
+		(intersection-1) node (v6) {};
+		\draw [green!70!black, fill = green!70!black!40, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line4 and vertical1}]
+		(intersection-1) node (v7) {};
+		\draw [name intersections = {of = line4 and vert}]
+		(intersection-1) node (v8) {};
+		\draw [green!70!black, fill = green!70!black!30, very thick] ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) --cycle;
+		\draw [name intersections = {of = line5 and vertical1}]
+		(intersection-1) node (v9) {};
+		\draw [name intersections = {of = line5 and vert}]
+		(intersection-1) node (v10) {};
+		\draw [green!70!black, fill = green!70!black!20, very thick] ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) -- ($(v10)!0.01cm!{atan(-1/2)}:(v9)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) --cycle;
+		%=================================================================================================================================================================================================================================================================================
+		\draw [red!70!black, very thick, domain = -2:6, name path = red] plot(\x, -\x / 5 + 24 / 5) node [above = 3] {\LARGE $\mbox{\boldmath $w$}_{1}{}^{T}\mbox{\boldmath $x$} = a_{1}$};
+		\draw [red!70!black, very thick, domain = 2.7:6, name path = red2] plot(\x, -2.8*\x + 15.2) node [above left] {\LARGE $\mbox{\boldmath $w$}_{2}{}^{T}\mbox{\boldmath $x$} = a_{2}$};
+		\draw [red!70!black, very thick, domain = -2:6, name path = red3] plot(\x, 1.1*\x / 3 + 0.1) node [above] {\LARGE $\mbox{\boldmath $w$}_{3}{}^{T}\mbox{\boldmath $x$} = a_{3}$};
+		\draw [red!70!black, very thick, domain = -1.5:1.8, name path = red4] plot(\x, -2.8*\x + 2.3) node [above right] {\LARGE $\mbox{\boldmath $w$}_{4}{}^{T}\mbox{\boldmath $x$} = a_{4}$};
+		\draw [name intersections = {of = red and red2}]
+		(intersection-1) node (v11) {};
+		\draw [name intersections = {of = red2 and red3}]
+		(intersection-1) node (v12) {};
+		\draw [name intersections = {of = red3 and red4}]
+		(intersection-1) node (v13) {};
+		\draw [name intersections = {of = red4 and red}]
+		(intersection-1) node (v14) {};
+		%赤の部分
+		\draw [fill = red!30] ($(v11)!0.01cm!180:(v12)$) -- ($(v12)!0.01cm!180:(v11)$) -- ($(v13)!0.01cm!180:(v12)$) -- ($(v14)!0.01cm!180:(v13)$) -- ($(v11)!0.01cm!180:(v12)$) -- cycle;
+		\draw [green!70!black] (v1) -- (v2);
+		\draw [green!70!black] (v3) -- (v4);
+		\draw [green!70!black] (v5) -- (v6);
+		\draw [green!70!black] (v7) -- (v8);
+		\draw [green!70!black] (v9) -- (v10);
+		\draw [red!70!black] (v11) -- (v12);
+		\draw [red!70!black] (v13) -- (v12);
+		\draw [red!70!black] (v14) -- (v13);
+		\draw [red!70!black] (v11) -- (v14);
+		\draw [help lines] (-2.2, -2.2) grid (5.7, 5.7);
+		\draw [->, very thick] (-2.2, 0) -- (5.7, 0);
+		\draw [->, very thick] (0, -2.2) -- (0, 5.7);
+		\draw [->, line width = 3pt, domain = 0.2:0.9, blue!70!black, text = black] ($(v13)!0.01cm!180:(v14)$) -- ($(v13)!2cm!(v14)$);
+		\draw [->, line width = 3pt, domain = 0.9:2.3, blue!70!black, text = black] ($(v13)!0.01cm!180:(v14)$) -- ($(v13)!2cm!(v12)$);
+		\draw (-2, -1) node [above] {\LARGE ${\rm max} \, \mbox{\boldmath $c$}^{T}\mbox{\boldmath $x$}$};
+		\draw (-2, -2) node [above] {\LARGE $s.t.\;\;\;\;\mbox{\boldmath $w$}_{i}{}^{T}\mbox{\boldmath $x$} \, \leq\, a_{i}, \; \mbox{\boldmath $w$}_{j}{}^{T}\mbox{\boldmath $x$} \, \geq\, a_{j}$};
+	\end{tikzpicture}
+\end{center}
+よって、線形計画問題では必ず制約条件が作る多角形の頂点にいずれかにおいて最適解をもつ。
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0);
+		\draw [white, domain = -1.2:8, name path = line] plot(\x, -\x / 2 + 11 / 2);
+		\draw [white, domain = -2:7.3, very thick, name path = line2] plot(\x, -\x/2 + 4);
+		\draw [white, domain = -2.2:6.3, very thick, name path = line3] plot(\x, -\x/2 + 5/2);
+		\draw [white, domain = -3:6, very thick, name path = line4] plot(\x, -\x/2 + 1);
+		\draw [white, domain = -4:5, very thick, name path = line5] plot(\x, -\x/2 - 1/2);
+		\draw [green!70!black, very thick, name path = vertical1] (-0.2, 7.1) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, name path = vert] (7.6, 3.2) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, domain = -0.2:7.6] plot(\x, -\x/2 + 7);
+		\draw [name intersections = {of = line and vertical1}]
+		(intersection-1) node (v1) {};
+		\draw [name intersections = {of = line and vert}]
+		(intersection-1) node (v2) {};
+		\draw [green!70!black, very thick, fill = green!70!black!60] ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- (7.6, 3.2) -- (-0.2, 7.1) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) --cycle;
+		\draw [name intersections = {of = line2 and vertical1}]
+		(intersection-1) node (v3) {};
+		\draw [name intersections = {of = line2 and vert}]
+		(intersection-1) node (v4) {};
+		\draw [green!70!black, fill = green!70!black!50, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line3 and vertical1}]
+		(intersection-1) node (v5) {};
+		\draw [name intersections = {of = line3 and vert}]
+		(intersection-1) node (v6) {};
+		\draw [green!70!black, fill = green!70!black!40, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line4 and vertical1}]
+		(intersection-1) node (v7) {};
+		\draw [name intersections = {of = line4 and vert}]
+		(intersection-1) node (v8) {};
+		\draw [green!70!black, fill = green!70!black!30, very thick] ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) --cycle;
+		\draw [name intersections = {of = line5 and vertical1}]
+		(intersection-1) node (v9) {};
+		\draw [name intersections = {of = line5 and vert}]
+		(intersection-1) node (v10) {};
+		\draw [green!70!black, fill = green!70!black!20, very thick] ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) -- ($(v10)!0.01cm!{atan(-1/2)}:(v9)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) --cycle;
+		\draw [fill = red!30] (O) -- ++(90:5cm) -- (3, 4) -- (5, 0) -- (O);
+		\draw [green!70!black] (v1) -- (v2);
+		\draw [green!70!black] (v3) -- (v4);
+		\draw [green!70!black] (v5) -- (v6);
+		\draw [green!70!black] (v7) -- (v8);
+		\draw [green!70!black] (v9) -- (v10);
+		\draw [help lines] (-2.2, -2.2) grid (5.7, 5.7);
+		\draw [->, very thick] (-2.2, 0) -- (5.7, 0);
+		\draw [->, very thick] (0, -2.2) -- (0, 5.7);
+		\draw [red!70!black, very thick, domain = -2:6] plot(\x, -\x / 3 + 5);
+		\draw [red!70!black, very thick, domain = 2:6] plot(\x, -2*\x + 10);
+		\draw [fill = red, red] (O) circle [radius = 0.2];
+		\draw [fill = red, red] (0, 5) circle [radius = 0.2];
+		\draw [fill = red, red] (5, 0) circle [radius = 0.2];
+		\draw [fill = red, red] (3, 4) circle [radius = 0.2];
+	\end{tikzpicture}
+\end{center}
+原点は可能解であるので、原点を初期解として、これを改善することを考える。
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0);
+		\draw [white, domain = -1.2:8, name path = line] plot(\x, -\x / 2 + 11 / 2);
+		\draw [white, domain = -2:7.3, very thick, name path = line2] plot(\x, -\x/2 + 4);
+		\draw [white, domain = -2.2:6.3, very thick, name path = line3] plot(\x, -\x/2 + 5/2);
+		\draw [white, domain = -3:6, very thick, name path = line4] plot(\x, -\x/2 + 1);
+		\draw [white, domain = -4:5, very thick, name path = line5] plot(\x, -\x/2 - 1/2);
+		\draw [green!70!black, very thick, name path = vertical1] (-0.2, 7.1) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, name path = vert] (7.6, 3.2) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, domain = -0.2:7.6] plot(\x, -\x/2 + 7);
+		\draw [name intersections = {of = line and vertical1}]
+		(intersection-1) node (v1) {};
+		\draw [name intersections = {of = line and vert}]
+		(intersection-1) node (v2) {};
+		\draw [green!70!black, very thick, fill = green!70!black!60] ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- (7.6, 3.2) -- (-0.2, 7.1) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) --cycle;
+		\draw [name intersections = {of = line2 and vertical1}]
+		(intersection-1) node (v3) {};
+		\draw [name intersections = {of = line2 and vert}]
+		(intersection-1) node (v4) {};
+		\draw [green!70!black, fill = green!70!black!50, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line3 and vertical1}]
+		(intersection-1) node (v5) {};
+		\draw [name intersections = {of = line3 and vert}]
+		(intersection-1) node (v6) {};
+		\draw [green!70!black, fill = green!70!black!40, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line4 and vertical1}]
+		(intersection-1) node (v7) {};
+		\draw [name intersections = {of = line4 and vert}]
+		(intersection-1) node (v8) {};
+		\draw [green!70!black, fill = green!70!black!30, very thick] ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) --cycle;
+		\draw [name intersections = {of = line5 and vertical1}]
+		(intersection-1) node (v9) {};
+		\draw [name intersections = {of = line5 and vert}]
+		(intersection-1) node (v10) {};
+		\draw [green!70!black, fill = green!70!black!20, very thick] ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) -- ($(v10)!0.01cm!{atan(-1/2)}:(v9)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) --cycle;
+		\draw [fill = red!30] (O) -- ++(90:5cm) -- (3, 4) -- (5, 0) -- (O);
+		\draw [green!70!black] (v1) -- (v2);
+		\draw [green!70!black] (v3) -- (v4);
+		\draw [green!70!black] (v5) -- (v6);
+		\draw [green!70!black] (v7) -- (v8);
+		\draw [green!70!black] (v9) -- (v10);
+		\draw [help lines] (-2.2, -2.2) grid (5.7, 5.7);
+		\draw [->, very thick] (-2.2, 0) -- (5.7, 0);
+		\draw [->, very thick] (0, -2.2) -- (0, 5.7);
+		\draw [red!70!black, very thick, domain = -2:6] plot(\x, -\x / 3 + 5);
+		\draw [red!70!black, very thick, domain = 2:6] plot(\x, -2*\x + 10);
+		\draw [fill = red, red] (O) circle [radius = 0.2];
+		\draw [red, fill = white] (0, 5) circle [radius = 0.2];
+		\draw [red, fill = white] (5, 0) circle [radius = 0.2];
+		\draw [red, fill = white] (3, 4) circle [radius = 0.2];
+	\end{tikzpicture}
+\end{center}
+暫定解から伸びる辺の方向に解を改善することを考える。暫定解から複数ある候補に向かう時急な正の勾配を持つ方向を選んで解を改善する。
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0);
+		\draw [white, domain = -1.2:8, name path = line] plot(\x, -\x / 2 + 11 / 2);
+		\draw [white, domain = -2:7.3, very thick, name path = line2] plot(\x, -\x/2 + 4);
+		\draw [white, domain = -2.2:6.3, very thick, name path = line3] plot(\x, -\x/2 + 5/2);
+		\draw [white, domain = -3:6, very thick, name path = line4] plot(\x, -\x/2 + 1);
+		\draw [white, domain = -4:5, very thick, name path = line5] plot(\x, -\x/2 - 1/2);
+		\draw [green!70!black, very thick, name path = vertical1] (-0.2, 7.1) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, name path = vert] (7.6, 3.2) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, domain = -0.2:7.6] plot(\x, -\x/2 + 7);
+		\draw [name intersections = {of = line and vertical1}]
+		(intersection-1) node (v1) {};
+		\draw [name intersections = {of = line and vert}]
+		(intersection-1) node (v2) {};
+		\draw [green!70!black, very thick, fill = green!70!black!60] ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- (7.6, 3.2) -- (-0.2, 7.1) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) --cycle;
+		\draw [name intersections = {of = line2 and vertical1}]
+		(intersection-1) node (v3) {};
+		\draw [name intersections = {of = line2 and vert}]
+		(intersection-1) node (v4) {};
+		\draw [green!70!black, fill = green!70!black!50, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line3 and vertical1}]
+		(intersection-1) node (v5) {};
+		\draw [name intersections = {of = line3 and vert}]
+		(intersection-1) node (v6) {};
+		\draw [green!70!black, fill = green!70!black!40, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line4 and vertical1}]
+		(intersection-1) node (v7) {};
+		\draw [name intersections = {of = line4 and vert}]
+		(intersection-1) node (v8) {};
+		\draw [green!70!black, fill = green!70!black!30, very thick] ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) --cycle;
+		\draw [name intersections = {of = line5 and vertical1}]
+		(intersection-1) node (v9) {};
+		\draw [name intersections = {of = line5 and vert}]
+		(intersection-1) node (v10) {};
+		\draw [green!70!black, fill = green!70!black!20, very thick] ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) -- ($(v10)!0.01cm!{atan(-1/2)}:(v9)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) --cycle;
+		\draw [fill = red!30] (O) -- ++(90:5cm) -- (3, 4) -- (5, 0) -- (O);
+		\draw [green!70!black] (v1) -- (v2);
+		\draw [green!70!black] (v3) -- (v4);
+		\draw [green!70!black] (v5) -- (v6);
+		\draw [green!70!black] (v7) -- (v8);
+		\draw [green!70!black] (v9) -- (v10);
+		\draw [help lines] (-2.2, -2.2) grid (5.7, 5.7);
+		\draw [->, very thick] (-2.2, 0) -- (5.7, 0);
+		\draw [->, very thick] (0, -2.2) -- (0, 5.7);
+		\draw [red!70!black, very thick, domain = -2:6] plot(\x, -\x / 3 + 5);
+		\draw [red!70!black, very thick, domain = 2:6] plot(\x, -2*\x + 10);
+		\draw [->, line width = 2.5pt, blue!70!red] (O) -- (0, 4.8);
+		\draw [->, line width = 4pt, blue!70!red] (O) -- (0, 2);
+		\draw [->, line width = 4pt, blue!70!red] (O) -- (2, 0);
+		\draw [->, line width = 4pt, blue!70!black] (O) -- (1, 2) node [right] {\LARGE $\mbox{\boldmath $c$}$};
+		\draw [->, very thick, blue!70!black] (O) -- (2.8, 5.6);
+		\draw [fill = red, red] (O) circle [radius = 0.2];
+		\draw [red, fill = yellow] (0, 5) circle [radius = 0.2];
+		\draw [red, fill = white] (5, 0) circle [radius = 0.2];
+		\draw [red, fill = white] (3, 4) circle [radius = 0.2];
+	\end{tikzpicture}
+\end{center}
+
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0);
+		\draw [white, domain = -1.2:8, name path = line] plot(\x, -\x / 2 + 11 / 2);
+		\draw [white, domain = -2:7.3, very thick, name path = line2] plot(\x, -\x/2 + 4);
+		\draw [white, domain = -2.2:6.3, very thick, name path = line3] plot(\x, -\x/2 + 5/2);
+		\draw [white, domain = -3:6, very thick, name path = line4] plot(\x, -\x/2 + 1);
+		\draw [white, domain = -4:5, very thick, name path = line5] plot(\x, -\x/2 - 1/2);
+		\draw [green!70!black, very thick, name path = vertical1] (-0.2, 7.1) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, name path = vert] (7.6, 3.2) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, domain = -0.2:7.6] plot(\x, -\x/2 + 7);
+		\draw [name intersections = {of = line and vertical1}]
+		(intersection-1) node (v1) {};
+		\draw [name intersections = {of = line and vert}]
+		(intersection-1) node (v2) {};
+		\draw [green!70!black, very thick, fill = green!70!black!60] ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- (7.6, 3.2) -- (-0.2, 7.1) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) --cycle;
+		\draw [name intersections = {of = line2 and vertical1}]
+		(intersection-1) node (v3) {};
+		\draw [name intersections = {of = line2 and vert}]
+		(intersection-1) node (v4) {};
+		\draw [green!70!black, fill = green!70!black!50, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line3 and vertical1}]
+		(intersection-1) node (v5) {};
+		\draw [name intersections = {of = line3 and vert}]
+		(intersection-1) node (v6) {};
+		\draw [green!70!black, fill = green!70!black!40, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line4 and vertical1}]
+		(intersection-1) node (v7) {};
+		\draw [name intersections = {of = line4 and vert}]
+		(intersection-1) node (v8) {};
+		\draw [green!70!black, fill = green!70!black!30, very thick] ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) --cycle;
+		\draw [name intersections = {of = line5 and vertical1}]
+		(intersection-1) node (v9) {};
+		\draw [name intersections = {of = line5 and vert}]
+		(intersection-1) node (v10) {};
+		\draw [green!70!black, fill = green!70!black!20, very thick] ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) -- ($(v10)!0.01cm!{atan(-1/2)}:(v9)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) --cycle;
+		\draw [fill = red!30] (O) -- ++(90:5cm) -- (3, 4) -- (5, 0) -- (O);
+		\draw [green!70!black] (v1) -- (v2);
+		\draw [green!70!black] (v3) -- (v4);
+		\draw [green!70!black] (v5) -- (v6);
+		\draw [green!70!black] (v7) -- (v8);
+		\draw [green!70!black] (v9) -- (v10);
+		\draw [help lines] (-2.2, -2.2) grid (5.7, 5.7);
+		\draw [->, very thick] (-2.2, 0) -- (5.7, 0);
+		\draw [->, very thick] (0, -2.2) -- (0, 5.7);
+		\draw [red!70!black, very thick, domain = -2:6] plot(\x, -\x / 3 + 5);
+		\draw [red!70!black, very thick, domain = 2:6] plot(\x, -2*\x + 10);
+		\draw [->, line width = 2.5pt, blue!70!red] (0, 5) -- (2.8, 4.1);
+		\draw [->, line width = 4pt, blue!70!red] (0, 5) -- (1.5, 4.5);
+		\draw [->, line width = 4pt, blue!70!red] (0, 5) -- (0, 3);
+		\draw [->, line width = 4pt, blue!70!black] (0, 5) -- (1, 7) node [right] {\LARGE $\mbox{\boldmath $c$}$};
+		\draw [->, very thick, blue!70!black] (-1, 3) -- (1.5, 8);
+		\draw [red, fill = white] (O) circle [radius = 0.2];
+		\draw [red, fill = red] (0, 5) circle [radius = 0.2];
+		\draw [red, fill = yellow] (3, 4) circle [radius = 0.2];
+		\draw [red, fill = white] (5, 0) circle [radius = 0.2];
+	\end{tikzpicture}
+\end{center}
+処理を繰り返す。
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0);
+		\draw [white, domain = -1.2:8, name path = line] plot(\x, -\x / 2 + 11 / 2);
+		\draw [white, domain = -2:7.3, very thick, name path = line2] plot(\x, -\x/2 + 4);
+		\draw [white, domain = -2.2:6.3, very thick, name path = line3] plot(\x, -\x/2 + 5/2);
+		\draw [white, domain = -3:6, very thick, name path = line4] plot(\x, -\x/2 + 1);
+		\draw [white, domain = -4:5, very thick, name path = line5] plot(\x, -\x/2 - 1/2);
+		\draw [green!70!black, very thick, name path = vertical1] (-0.2, 7.1) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, name path = vert] (7.6, 3.2) --++({atan(-1/2) - 90}:{15/sqrt(5)});
+		\draw [green!70!black, very thick, domain = -0.2:7.6] plot(\x, -\x/2 + 7);
+		\draw [name intersections = {of = line and vertical1}]
+		(intersection-1) node (v1) {};
+		\draw [name intersections = {of = line and vert}]
+		(intersection-1) node (v2) {};
+		\draw [green!70!black, very thick, fill = green!70!black!60] ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- (7.6, 3.2) -- (-0.2, 7.1) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) --cycle;
+		\draw [name intersections = {of = line2 and vertical1}]
+		(intersection-1) node (v3) {};
+		\draw [name intersections = {of = line2 and vert}]
+		(intersection-1) node (v4) {};
+		\draw [green!70!black, fill = green!70!black!50, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v2)!0.01cm!{atan(-1/2)}:(v1)$) -- ($(v1)!0.01cm!{atan(-1/2) + 180}:(v2)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line3 and vertical1}]
+		(intersection-1) node (v5) {};
+		\draw [name intersections = {of = line3 and vert}]
+		(intersection-1) node (v6) {};
+		\draw [green!70!black, fill = green!70!black!40, very thick] ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) -- ($(v4)!0.01cm!{atan(-1/2)}:(v3)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v3)!0.01cm!{atan(-1/2) + 180}:(v4)$) --cycle;
+		\draw [name intersections = {of = line4 and vertical1}]
+		(intersection-1) node (v7) {};
+		\draw [name intersections = {of = line4 and vert}]
+		(intersection-1) node (v8) {};
+		\draw [green!70!black, fill = green!70!black!30, very thick] ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v6)!0.01cm!{atan(-1/2)}:(v5)$) -- ($(v5)!0.01cm!{atan(-1/2) + 180}:(v6)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) --cycle;
+		\draw [name intersections = {of = line5 and vertical1}]
+		(intersection-1) node (v9) {};
+		\draw [name intersections = {of = line5 and vert}]
+		(intersection-1) node (v10) {};
+		\draw [green!70!black, fill = green!70!black!20, very thick] ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) -- ($(v10)!0.01cm!{atan(-1/2)}:(v9)$) -- ($(v8)!0.01cm!{atan(-1/2)}:(v7)$) -- ($(v7)!0.01cm!{atan(-1/2) + 180}:(v8)$) -- ($(v9)!0.01cm!{atan(-1/2) + 180}:(v10)$) --cycle;
+		\draw [fill = red!30] (O) -- ++(90:5cm) -- (3, 4) -- (5, 0) -- (O);
+		\draw [green!70!black] (v1) -- (v2);
+		\draw [green!70!black] (v3) -- (v4);
+		\draw [green!70!black] (v5) -- (v6);
+		\draw [green!70!black] (v7) -- (v8);
+		\draw [green!70!black] (v9) -- (v10);
+		\draw [help lines] (-2.2, -2.2) grid (5.7, 5.7);
+		\draw [->, very thick] (-2.2, 0) -- (5.7, 0);
+		\draw [->, very thick] (0, -2.2) -- (0, 5.7);
+		\draw [red!70!black, very thick, domain = -2:6] plot(\x, -\x / 3 + 5);
+		\draw [red!70!black, very thick, domain = 2:6] plot(\x, -2*\x + 10);
+		\draw [->, line width = 4pt, blue!70!red] (3, 4) -- (1.5, 4.5);
+		\draw [->, line width = 4pt, blue!70!red] (3, 4) -- (3.8, 2.4);
+		\draw [->, line width = 4pt, blue!70!black] (3, 4) -- (4, 6) node [right] {\LARGE $\mbox{\boldmath $c$}$};
+		\draw [->, very thick, blue!70!black] (2, 2) -- (4.3, 6.6);
+		\draw [red, fill = white] (O) circle [radius = 0.2];
+		\draw [red, fill = white] (0, 5) circle [radius = 0.2];
+		\draw [red, fill = red] (3, 4) circle [radius = 0.2];
+		\draw [red, fill = white] (5, 0) circle [radius = 0.2];
+	\end{tikzpicture}
+\end{center}
+この時、勾配はどちらに行っても負となるため、改善する方向が見つからなくなり。最適解と考えられるため、終了する。
+\subsection{シンプレックス法}
+以上のような線形計画問題を解く解法の一つとして、シンプレックス法が存在し、以下のような解法である。
+\begin{enumerate}
+	\item 正準形に変換する。\\
+	正準形とは制約条件式が等式となっているもののことをいう。
+	\item 以下を繰り返す。\\
+	基底変数とは独立変数のことであり、制約条件式の中で一つしか出てこないもののことである。
+	\begin{enumerate}[2-1]
+		\item 全ての基底変数を0とおいたときの目的関数の値（基底可能解）を$z$とする。
+		\item 基底変数の内最適化に最も寄与するものを選び、その基底変数を$x$とする。
+		寄与するものがなければ現在の$z$を最適値として終了する。
+		\item $x$以外の基底変数を0のままとし、$x$だけを変化させるとき、どの条件式まで$x$を変化させることができるかを調べる。
+		この時選ばれる条件式を$S$とする。
+		\item $S$を用いて、他の条件式から$x$を消去して、基底変数を入れ替える。（$x$を基底変数から外す。この時非基底変数のどれかが基底変数となる。）
+	\end{enumerate}
+\end{enumerate}
+\subsection{具体例}
+以下の問題を考える。
+\begin{eqnarray}
+	\begin{array}{ccccccccccc}
+		x_{1} & + & 3x_{2} & \; &\; & \;& \; &\; & \; & \leq & 15\\
+		2x_{1} & + & x_{2} & \; &\; & \;& \; &\; & \; & \leq & 10\\
+		x_{1} & + & 2x_{2} & \; &\; & \;& \; &\; & \; & = & z\\
+	\end{array}\label{senkei:problem1}
+\end{eqnarray}
+の時、条件$x_{1} \geq 0, \, x_{2} \geq 0$のもとで式\eqref{senkei:problem1}を満たすような$z$を最大化する問題を考える。
+この時、まず不等式を等式に変えるために$y_{1} \geq 0, \, y_{2} \geq 0$のスラック変数$y_{1}, y_{2}$を導入して以下のように式変形する。
+この時、$\mbox{\boldmath $w$}_{1} = \left[ \; 1\; 3\; \right]^{T}$, $\mbox{\boldmath $w$}_{2} = \left[\; 2\; 1\; \right]^{T}$, 
+$\mbox{\boldmath $c$} = \left[\; 1\; 2\; \right]^{T}$と表される。
+\begin{eqnarray}
+	\begin{array}{ccccccccccc}
+		x_{1} & + & 3x_{2} & + & y_{1} & \;& \; &\; & \; & = & 15\\
+		2x_{1} & + & x_{2} & \; &\; & + & y_{2} &\; & \; & = & 10\\
+		x_{1} & + & 2x_{2} & \; &\; & \;& \; & - & z & = & 0\\
+	\end{array}\label{senkei:problem2}
+\end{eqnarray}
+この変形により、式\eqref{senkei:problem1}は条件$x_{1} \geq 0, \, x_{2} \geq 0, \, y_{1} \geq 0, \, y_{2} \geq 0$の
+もとで式\eqref{senkei:problem2}を満たすような$z$を最大化する問題となる。\\
+この時、式\eqref{senkei:problem2}は正準形であるため、シンプレックス法を用いて解答することができる。\\
+よって、以下のように回答できる。\\
+まず、式\eqref{senkei:problem2}においては独立変数は$x_{1}, x_{2}$であるため、これらを全て0にすると以下のようになる。
+\begin{eqnarray*}
+	\begin{array}{lllllllllll}
+		0 & + & 3 \cdot 0 & + & y_{1} & \;& \; &\; & \; & = & 15\\
+		2 \cdot 0 & + & 0 & \; &\; & + & y_{2} &\; & \; & = & 10\\
+		0 & + & 2 \cdot 0 & \; &\; & \;& \; & - & z & = & 0\\
+	\end{array}
+\end{eqnarray*}
+この時、制約条件を満たすので、$(x_{1}, x_{2}) = (0, 0)$は基底可能解である。この時、$z = 0$\\
+次に正の勾配で大きいほうを選んで更新するので、長さが1で方向が$x_{2}$軸方向のベクトルを$\mbox{\boldmath $t$}_{y}$とし、$x_{1}$軸方向のベクトルを$\mbox{\boldmath $t$}_{x}$とおくと、
+これらと$\mbox{\boldmath $c$}$の内積はそれぞれ式\eqref{senkei:problem2}の$x_{1}, x_{2}$の係数となるので、係数を比べて大きいほうに解を改善するので、$x_{2}$軸方向に更新する。\\
+よって、基底変数である$x_{1}$を0とし、$x_{2}$をどこまで動かせるか調べる。
+\begin{eqnarray*}
+	&&\begin{array}{lllllllllll}
+		0 & + & 3x_{2} & + & y_{1} & \;& \; &\; & \; & = & 15\\
+		2 \cdot 0 & + & x_{2} & \; &\; & + & y_{2} &\; & \; & = & 10\\
+		x_{1} & + & 2 \cdot x_{2} & \; &\; & \;& \; & - & z & = & 0\\
+	\end{array}\\
+	&&\Longrightarrow
+	\begin{array}{lllllllllll}
+		0 & + & 3x_{2} & + & 0 & \;& \; &\; & \; & \leq & 15\\
+		2 \cdot 0 & + & x_{2} & \; &\; & + & 0 &\; & \; & \leq & 10\\
+		x_{1} & + & 2 \cdot x_{2} & \; &\; & \;& \; & - & z & = & 0\\
+	\end{array}\\
+	&&\Longrightarrow
+	\begin{array}{lllllllllll}
+		\frac{1}{3} \cdot 0 & + & x_{2} & + & \frac{1}{3} \cdot 0 & \;& \; &\; & \; & \leq & 5\\
+		2 \cdot 0 & + & x_{2} & \; &\; & + & 0 &\; & \; & \leq & 10\\
+		x_{1} & + & 2 \cdot x_{2} & \; &\; & \;& \; & - & z & = & 0\\
+	\end{array}
+\end{eqnarray*}
+よって、この時、$x_{2}$は5まで動かせることを意味し、$\frac{1}{3} \cdot 0 + x_{2} + \frac{1}{3} \cdot 0 \leq 5$が条件式としてえらばれる。
+よって、以下のように変形できる。
+\begin{eqnarray*}
+	\begin{array}{lllllllllll}
+		\frac{1}{3}x_{1} & + & x_{2} & + & \frac{1}{3} y_{1} & \;& \; &\; & \; & = & 5\\
+		2x_{1} & + & x_{2} & \; &\; & + & y_{2} &\; & \; & = & 10\\
+		x_{1} & + & 2x_{2} & \; &\; & \;& \; & - & z & = & 0\\
+	\end{array}
+\end{eqnarray*}
+よって、条件式$\frac{1}{3}x_{1} + x_{2} + \frac{1}{3}y_{1} = 5$を用いて、$x_{2}$を基底変数から外すと以下のように変形できる。
+\begin{eqnarray*}
+	\begin{array}{lllllllllll}
+		\frac{1}{3}x_{1} & + & x_{2} & + & \frac{1}{3} y_{1} & \;& \; &\; & \; & = & 5\\
+		\frac{5}{3}x_{1} & \; & \; & - & \frac{1}{3}y_{1} & + & y_{2} &\; & \; & = & 5\\
+		\frac{1}{3}x_{1} & \; & \; & - & \frac{2}{3}y_{1} & \;& \; & - & z & = & -10\\
+	\end{array}
+\end{eqnarray*}
+この時、$x_{2}$を基準にして、基底変数が$x_{1}, y_{1}$となる。
+\begin{eqnarray*}
+	\begin{array}{lllllllllll}
+		\frac{1}{3} \cdot 0 & + & x_{2} & + & \frac{1}{3} \cdot 0 & \;& \; &\; & \; & = & 5\\
+		\frac{5}{3} \cdot 0 & \; & \; & - & \frac{1}{3} \cdot 0 & + & y_{2} &\; & \; & = & 5\\
+		\frac{1}{3} \cdot 0 & \; & \; & - & \frac{2}{3} \cdot 0 & \;& \; & - & z & = & -10\\
+	\end{array}
+\end{eqnarray*}
+よって、この時、$(x_{1}, y_{1}) = (0, 0)$は基底可能解であり、$z=10$よって、係数を比較して、正の勾配となるのは$x_{1}$の時のみであるため、
+$x_{1}$を選び、$y_{1} = 0$として$x_{1}$がどこまで動かせるか調べる。
+\begin{eqnarray*}
+	&&\begin{array}{lllllllllll}
+		\frac{1}{3}x_{1} & + & x_{2} & + & \frac{1}{3}\cdot 0 & \;& \; &\; & \; & = & 5\\
+		\frac{5}{3}x_{1} & \; & \; & - & \frac{1}{3}\cdot 0 & + & y_{2} &\; & \; & = & 5\\
+		\frac{1}{3}x_{1} & \; & \; & - & \frac{2}{3}\cdot 0 & \;& \; & - & z & = & -10\\
+	\end{array}\\
+	&&\Longrightarrow
+	\begin{array}{lllllllllll}
+		\frac{1}{3}x_{1} & + & 0 & + & \frac{1}{3}\cdot 0 & \;& \; &\; & \; & \leq & 5\\
+		\frac{5}{3}x_{1} & \; & \; & - & \frac{1}{3}\cdot 0 & + & 0 &\; & \; & \leq & 5\\
+		\frac{1}{3}x_{1} & \; & \; & - & \frac{2}{3}\cdot 0 & \;& \; & - & z & = & -10\\
+	\end{array}\\
+	&&\Longrightarrow
+	\begin{array}{lllllllllll}
+		x_{1} & + & 0 & + & 3\cdot 0 & \;& \; &\; & \; & \leq & 15\\
+		x_{1} & \; & \; & - & \frac{1}{5}\cdot 0 & + & \frac{3}{5}\cdot 0 &\; & \; & \leq & 3\\
+		\frac{1}{3}x_{1} & \; & \; & - & \frac{2}{3}\cdot 0 & \;& \; & - & z & = & -10\\
+	\end{array}
+\end{eqnarray*}
+この場合$x_{1} = 3$まで動かせることを意味する。すなわち$x_{1} - \frac{1}{5}\cdot 0 + \frac{3}{5}\cdot 0 \leq 3$が制約として聞くことが分かるので、
+以下のような式になる。
+\begin{eqnarray*}
+	\begin{array}{lllllllllll}
+		x_{1} & + & 3\cdot x_{2} & + & y_{1} &\; & \; &\; & \; & = & 15\\
+		x_{1} & \; & \; & - & \frac{1}{5}\cdot y_{1} & + & \frac{3}{5}\cdot y_{2} &\; & \; & = & 3\\
+		\frac{1}{3}x_{1} & \; & \; & - & \frac{2}{3}\cdot y_{1} & \;& \; & - & z & = & -10\\
+	\end{array}
+\end{eqnarray*}
+この時、方程式$x_{1} -\frac{1}{5}\cdot y_{1} + \frac{3}{5}\cdot y_{2} = 3$を使って、$x_{1}$を基底変数から外す。
+\begin{eqnarray*}
+	\begin{array}{lllllllllll}
+		\; & + & x_{2} & + & \frac{2}{5}y_{1} & - & \frac{1}{5}y_{2} &\; & \; & = & 4\\
+		x_{1} & \; & \; & - & \frac{1}{5}\cdot y_{1} & + & \frac{3}{5}\cdot y_{2} &\; & \; & = & 3\\
+		\; & \; & \; & - & \frac{3}{5}\cdot y_{1} & - & \frac{1}{5}y_{2} & - & z & = & -11\\
+	\end{array}
+\end{eqnarray*}
+この時、基底変数は$y_{1}, y_{2}$であり、$(y_{1}, y_{2}) = (0, 0)$は基底可能解であり、$z = 11$。
+また、この時$y_{1}$方向も$y_{2}$方向の勾配もどちらも負であるため、これ以上値が大きくなることはないので、これが最適値となる。\\
+通常は以下のように係数比較だけで行う。
+\begin{eqnarray*}
+	\begin{array}{ccccccccccc}
+		x_{1} & + & 3x_{2} & + & y_{1} & \;& \; &\; & \; & = & 15\\
+		2x_{1} & + & x_{2} & \; &\; & + & y_{2} &\; & \; & = & 10\\
+		-x_{1} & - & 2x_{2} & \; &\; & \;& \; & + & z & = & 0\\
+	\end{array}\\
+	\Longrightarrow
+	\begin{array}{ccccc}
+		1 & 3 & 1 & 0 & 15\\
+		2 & 1 & 0 & 1 & 10\\
+		-1 & -2 & 0 & 0 & 0\\
+	\end{array}\\
+	\Longrightarrow
+	\begin{array}{ccccc}
+		1/3 & 1 & 1/3 & 0 & 5 \\
+		5/3 & 0 & -1/3 & 1 & 5 \\
+		-1/3 & 0 & 2/3 & 0 & 10 \\
+	\end{array}\\
+	\Longrightarrow
+	\begin{array}{ccccc}
+		0 & 3 & 6/5 & -3/5 & 12\\
+		1 & 0 & -1/5 & 3/5 & 3\\
+		0 & 0 & 9/5 & 3/5 & 33\\
+	\end{array}\\
+	\Longrightarrow
+	\begin{array}{ccccc}
+		0 & 1 & 2/5 & -1/5 & 4\\
+		1 & 0 & -1/5 & 3/5 & 3\\
+		0 & 0 & 3/5 & 1/5 & 11\\
+	\end{array}\\
+\end{eqnarray*}
+\subsection{双対問題}
+正準形に直した際にシンプレックス法で解けない場合に双対問題に変形して解くことがある。
+双対問題とは以下のように変形することをいう。
+\begin{eqnarray*}
+	&&\begin{array}{cccccc}
+		& x_{1} & + & 2x_{2} & \leq & 16\\
+		& 2x_{1} & + & x_{2} & \leq & 14\\
+		& 20x_{1} & + & 30x_{2} & = & z\\
+	\end{array}\\
+	&&x_{1} \geq 0, x_{2} \geq 0
+\end{eqnarray*}
+の条件を満たす$z$の最大化する問題は以下の双対問題として考えられる。
+\begin{eqnarray*}
+	&&\begin{array}{cccccc}
+		& \xi_{1}x_{1} & + & 2\xi_{1}x_{2} & \leq & 16\xi_{1}\\
+		& 2\xi_{2}x_{1} & + & \xi_{2}x_{2} & \leq & 14\xi_{2}\\
+		& 20x_{1} & + & 30x_{2} & = & z\\
+	\end{array}\\
+	&&x_{1} \geq 0, x_{2} \geq 0, \xi_{1} \geq 0, \xi_{2} \geq 0\\
+	\Longrightarrow
+	&&\begin{array}{cccccccc}
+		& \xi_{1}x_{1} & + & 2\xi_{1}x_{2} & \leq & 16\xi_{1} & \; & \;\\
+		& + & \; & + & \; & + & = & \zeta \\
+		& 2\xi_{2}x_{1} & + & \xi_{2}x_{2} & \leq & 14\xi_{2}& \; & \;\\
+		& \mbox{\rotatebox{90}{$\leq$}} & \; & \mbox{\rotatebox{90}{$\leq$}} & \; & \mbox{\rotatebox{90}{$\leq$}} & \; & \; \\
+		& 20x_{1} & + & 30x_{2} & = & z & \; & \;\\
+	\end{array}\\
+	&&x_{1} \geq 0, x_{2} \geq 0, \xi_{1} \geq 0, \xi_{2} \geq 0\\
+	\Longrightarrow
+	&&\begin{array}{cccccccc}
+		& \xi_{1} & \; & 2\xi_{1} & \; & 16\xi_{1} & \; & \;\\
+		& + & \; & + & \; & + & = & \zeta \\
+		& 2\xi_{2} & \; & \xi_{2} & \; & 14\xi_{2}& \; & \;\\
+		& \mbox{\rotatebox{90}{$\leq$}} & \; & \mbox{\rotatebox{90}{$\leq$}} & \; & \; & \; & \; \\
+		& 20 & \; & 30 & \; & \; & \; & \;\\
+	\end{array}\\
+	&&\xi_{1} \geq 0, \xi_{2} \geq 0\\
+\end{eqnarray*}
+の時に$\zeta$を最小化する問題となる。\\
+よってこれを解くと以下のようになる。
+\begin{eqnarray*}
+	&&\begin{array}{cccccccccccc}
+		-\xi_{1} & - & 2\xi_{2} & + & y_{1} & \; & \; & \; & \; & = & -20\\ 
+		-2\xi_{1} & - & \xi_{2} & \; & \; & + & y_{2} & \; & \; & = & -30\\ 
+		-16\xi_{1} & - & 14\xi_{2} & \; & \; & \; & \; & + & \zeta = & 0\\ 
+	\end{array}\\
+\end{eqnarray*}
+ここでこの時、初期解$\xi_{1} = \xi_{2} = 0$は制約条件を満たさないため、拡大された標準問題への変換を行い、それを解く。\\
+\begin{eqnarray*}
+	&&\mbox{最小化}w = u_{1} + u_{2}\\
+	&&\mbox{本来の目的関数}\zeta = 16\xi_{1} + 14\xi_{2}\\
+	&&\mbox{制約条件}\left\{
+		\begin{array}{cccccccccccccccc}
+			-\xi_{1} & - & 2\xi_{2} & + & y_{1} & \; & \; & \; & \; & - & u_{1} & \; & \; = & -20\\ 
+			-2\xi_{1} & - & \xi_{2} & \; & \; & + & y_{2} & \; & \; & \; & \; & - & u_{2} & = & -30\\ 
+		\end{array}
+		\right.\\
+	&&\mbox{よって、この問題でシンプレックス法で解くことを考える。}\\
+	&&\begin{array}{cccccccccccccccc}
+			\xi_{1} & + & 2\xi_{2} & - & y_{1} & \; & \; & \; & \; & + & u_{1} & \; & \; = & 20\\ 
+			2\xi_{1} & + & \xi_{2} & \; & \; & - & y_{2} & \; & \; & \; & \; & + & u_{2} & = & 30\\ 
+			-16\xi_{1} & - & 14\xi_{2} & \; & \; & \; & \; & + & \zeta & \; & \; & \; & \; & = & 0\\ 
+			\; & \; & \; & \; & \; & \; & \; & \; & w & - & u_{1} & - & u_{2} & = & ?\\ 
+		\end{array}\\
+\end{eqnarray*}
+ここで初期解は$\xi_{1} = \xi_{2} = y_{1} = y_{2} = 0, u_{1} = 20, u_{2} = 30$であるが、これは目的関数$w$が非基底変数(0となっている変数)で表現されてないので掃き出し法により式変形する。
+\begin{eqnarray*}
+	&&\begin{array}{cccccccccccccccc}
+		\xi_{1} & + & 2\xi_{2} & - & y_{1} & \; & \; & \; & \; & + & u_{1} & \; & \; = & 20\\ 
+		2\xi_{1} & + & \xi_{2} & \; & \; & - & y_{2} & \; & \; & \; & \; & + & u_{2} & = & 30\\ 
+		-16\xi_{1} & - & 14\xi_{2} & \; & \; & \; & \; & + & \zeta & \; & \; & \; & \; & = & 0\\ 
+		3\xi_{1} & + & 3\xi_{2} & - & y_{1} & - & y_{2} & + & w & \; & \; & \; & \; & = & 50\\ 
+	\end{array}\\
+\end{eqnarray*}
+よって、ここから普通のシンプレックス法を用いる。$w$を小さくするような寄与をする基底変数を選択していく。
+\begin{eqnarray*}
+	\Longrightarrow
+	&&\begin{array}{cccccccc}
+		1 & 2 & -1 & 0 & 1 & 0 & 0 &20\\ 
+		2 & 1 & 0 & -1 & 0 & 1 & 0 & 30\\ 
+		-16 & -14 & 0 & 0 & 0 & 0 & 1 & 0\\ 
+		3 & 3 & -1 & -1 & 0 & 0 & 0 & 50\\ 
+	\end{array}\\
+	\Longrightarrow
+	&&\begin{array}{cccccccc}
+		1 & 2 & -1 & 0 & 1 & 0 & 0 &20\\ 
+		1 & 1/2 & 0 & -1/2 & 0 & 1/2 & 0 & 15\\ 
+		-16 & -14 & 0 & 0 & 0 & 0 & 1 & 0\\ 
+		3 & 3 & -1 & -1 & 0 & 0 & 0 & 50\\ 
+	\end{array}\\
+	\Longrightarrow
+	&&\begin{array}{cccccccc}
+		0 & 3/2 & -1 & 1/2 & 1 & -1/2 & 0 &5\\ 
+		1 & 1/2 & 0 & -1/2 & 0 & 1/2 & 0 & 15\\ 
+		0 & -6 & 0 & -8 & 0 & 8 & 1 & 240\\ 
+		0 & 3/2 & -1 & 1/2 & 0 & -3/2 & 0 & 5\\ 
+	\end{array}\\
+	\Longrightarrow
+	&&\begin{array}{cccccccc}
+		0 & 1 & -2/3 & 1/3 & 2/3 & -1/3 & 0 & 10/3\\ 
+		2 & 1 & 0 & -1 & 0 & 1 & 0 & 30\\ 
+		0 & -6 & 0 & -8 & 0 & 8 & 1 & 240\\ 
+		0 & 3/2 & -1 & 1/2 & 0 & -3/2 & 0 & 5\\ 
+	\end{array}\\
+	\Longrightarrow
+	&&\begin{array}{cccccccc}
+		0 & 1 & -2/3 & 1/3 & 2/3 & -1/3 & 0 & 10/3\\ 
+		2 & 0 & 2/3 & -4/3 & -2/3 & 4/3 & 0 & 80/3\\ 
+		0 & 0 & -4 & -6 & 4 & 6 & 1 & 260\\ 
+		0 & 0 & 0 & 0 & -1 & -1 & 0 & 0\\ 
+	\end{array}\\
+\end{eqnarray*}
+よって、非基底変数$y_{1} = y_{2} = u_{1} = u_{2} = 0$であるので、$\xi_{1} = 40/3, \xi_{2} = 10/3, \zeta = 260$
+となり、ようやく実行可能解が求まったので、$u_{1}, u_{2}$を排除して計算する。
+\begin{eqnarray*}
+	&&\begin{array}{cccccccccccc}
+		\; & \; & \xi_{2} & - & \frac{2}{3}y_{1} & + & \frac{1}{3}y_{2} & \; & \; = & \frac{10}{3}\\ 
+		2\xi_{1} & \; & \; & + & \frac{2}{3}y_{1} & - & \frac{4}{3}y_{2} & \; & \; & = & \frac{80}{3}\\ 
+		\; & \; & \; & - & 4y_{1} & - & 6y_{2} & + & \zeta & = & 260\\ 
+	\end{array}\\
+\end{eqnarray*}
+よって、ここから$\zeta$を最小化させるようにシンプレックス法を用いるのだが、この時すでに最適解となっているため、これで終了となる。よって、最適解は$\zeta = 260$となる。
+\begin{center}
+	\begin{tikzpicture}[>=stealth, scale = 0.3]
+		\draw [very thick, name path = x] (-1, 0) -- (40, 0);
+		\draw [very thick, name path = y] (0, -2) -- (0, 30);
+		\draw [red, name path = red, very thick, domain = 0:40] plot(\x, -\x / 2 + 20);
+		\draw [red, name path = red2, very thick, domain =0:16] plot(\x, -2 * \x + 30);
+		\draw [name intersections = {of = red and red2}]
+		(intersection-1) node (v1) {};
+		\coordinate (v1) at (v1);
+		\draw [name intersections = {of = red2 and y}]
+		(intersection-1) node (v2) {};
+		\coordinate (v2) at (v2);
+		\draw [name intersections = {of = red and x}]
+		(intersection-1) node (v3) {};
+		\coordinate (v3) at (v3);
+		\draw [name intersections = {of = red2 and x}]
+		(intersection-1) node (v4) {};
+		\coordinate (v4) at (v4);
+		\draw [name intersections = {of = red and y}]
+		(intersection-1) node (v5) {};
+		\coordinate (v5) at (v5);
+		\draw [fill = red!30] (v2) -- (v1) -- (v3) -- (40, 30) -- (v2) -- cycle;
+		\draw [fill = blue!30] (v5) -- (v1) -- (v4) -- (0, 0) -- (v5) -- cycle;
+		\draw [help lines] (-1, -2) grid (40, 30);
+		\draw ($(0, 0) + (8, 8)$) node {人工変数$u_{1}, u_{2}$を用いて,};
+		\draw ($(0, 0) + (8, 6)$) node {実行可能解を求める際に使用した領域};
+		\draw ($(v1) + (16, 5)$) node {本来の領域};
+		\draw [green, very thick, domain = -1:20] plot(\x, -8*\x / 7 + 21.5);
+	\end{tikzpicture}
+\end{center}
+
+\section{生成モデル}
+パターン認識には以下の2種類が存在する。
+\begin{enumerate}
+	\item 識別モデルに基づくパターン認識\\
+	特徴空間に対し、各クラスの境界を求めておき、クラス未知のデータの特徴ベクトルが
+	特徴空間上のどこに位置するかを調べることでデータクラスを定める方法。\\
+	$\Longrightarrow$クラス未知のデータの特徴ベクトルに対してダイレクトにクラスを判定する関数が存在する。
+	\item 生成モデルに基づくパターン認識\\
+	クラスごとに特徴ベクトルの出力確率を与える確率モデルを用意し、クラス未知のデータの特徴ベクトルがそれぞれの
+	確率モデルから出力する確率を調べることでクラスを定める方法。\\
+	$\Longrightarrow$各クラスの確率モデルを与える出力確率を比較することによりクラス境界が定まるため、識別モデルよりも1ステップ多いが、
+	個別の確率のモデルをモデル化しやすく、ほかの特徴空間の識別に対しても知見を与えることができる利点も存在する。
+\end{enumerate}
+\subsection{識別モデル}
+識別モデルにはSVMなどがあるが、今回は割愛する。
+\subsection{生成モデル}
+生成モデルによるパターン認識は以下のような図で表されるようなモデルである。
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0) node at (O) [above] {送信記号$w_{i}$};
+		\coordinate (O1) at ($(O) + (1, -0.75)$);
+		\coordinate (O2) at ($(O1) + (3.5, 1.5)$);
+		\draw [thick, ->] ($(O) + (-0.5, 0)$) --++(0:1.5cm);
+		\draw (O1) rectangle (O2);
+		\coordinate (A) at ($(O1) + (1.5, 1)$) node at (A) {\Large 確率モデル};
+		\coordinate (A1) at ($(A) + (0.5, -0.45)$) node at (A1) [below] {$M_{i}\left(a_{1}, \, a_{2}, \, \ldots \, a_{N}\right)$};
+		\coordinate (O3) at ($(O2) + (0, -0.75)$) node at (O3) [above right=0.75] {特徴ベクトル};
+		\draw [thick, ->] (O3) --++(0:2.2cm);
+		\node (TMP) at ($(O3) + (1, 0)$) [below] {$\mbox{\boldmath $x$}$};
+		\coordinate (B) at ($(O3) + (2.2, -0.7)$);
+		\coordinate (B1) at ($(O3) + (4.7, 0.7)$);
+		\draw (B) rectangle (B1);
+		\node (TMP) at ($(B) + (1.3, 0.7)$) {\Large 復号化};
+		\node (TMP) at ($(TMP) + (0, -1)$) {${\rm Pr}(\mbox{\boldmath $x$}|M_{i})$};
+		\node (TMP) at ($(TMP) + (0, -0.5)$) {${\rm Pr}(M_{i}|\mbox{\boldmath $x$})$};
+		\node (TMP) at ($(TMP) + (2, 2.2)$) {送信記号の};
+		\node (TMP) at ($(TMP) + (0, -0.5)$) {推定値$\hat{w_{i}}$};
+		\draw[->, thick] (B1)++(-90:0.7) --++(0:2);
+	\end{tikzpicture}
+\end{center}
+送信記号が$w_{i}$から、特徴ベクトルである$\mbox{\boldmath $x$}$への写像を確率モデル$M$で表し、それにより、抽出された特徴ベクトルから、
+送信記号$\hat{w_{i}}$が送信された確率である事後確率${\rm Pr}(\hat{w_{i}}|\mbox{\boldmath $x$})$を求めることにより、復号化し、その記号から
+境界線を定めることにより、クラスを推定し、送信記号が、何であったか推定するというものである。
+\subsubsection{ベイズ決定則}
+この部分は授業では飛ばされたが、この部分が理解できないと次に進めないと考えられるため、記述する。\\
+$\{w_{i}\}$をクラス集合、$\{\alpha_{i}\}$を取りうる行動の集合、$\lambda(\alpha_{i}|w_{j})$を$x$のクラスが実際は$w_{j}$であるときに行動$\alpha_{i}$を取ることの損失とする。\\
+ここで、$\alpha_{i}$はデータ$x$のクラスを$w_{i}$と判断することを意味し、$\alpha_{0}$はデータ$x$のクラスは判定不能とすることを意味する。\\
+この時$R(\alpha_{i}|x) = \sum_{j}\lambda(\alpha_{i}|w_{j})P(w_{j}|x)$を条件付きリスクと呼び、この値が最小となる行動$\alpha$を選択する決定則をベイズ決定則と呼び、以下の式で表される。
+\begin{equation}
+	\alpha = \underset{i}{{\rm argmin}}\, R(\alpha_{i} | x) = \underset{\alpha_{i}}{{\rm argmin}}\, \sum_{j}\lambda(\alpha_{i}|w_{j}){\rm Pr}(w_{j}|x)\label{bayse}
+\end{equation}
+この時、損失$\lambda(\alpha_{i}|w_{j})$を具体的に以下のように定義する。
+\begin{eqnarray*}
+	&&\lambda(\alpha_{i}|w_{j}) = 
+	\left\{
+		\begin{array}{c}
+			0 \; \;if\; i = j\\
+		1\;\; if \; i \neq j\\
+	\end{array}
+	\right.\\
+	&&\mbox{正解を与える行動には0を不正解には1を与えることを意味する}
+\end{eqnarray*}
+この時、条件付きリスクは以下のように表される。
+\begin{eqnarray*}
+	R(\alpha_{i}|x) &=& \sum_{j}\lambda(\alpha_{i}|w_{j})P(w_{j}|x)\\
+	&=& \sum_{j \neq i}{\rm Pr}(w_{j}|x)\\
+	&=& 1 - {\rm Pr}(w{j}|x)
+\end{eqnarray*}
+となるため、ベイズ決定則は式\eqref{bayse}より、以下のように最小誤り率を与える決定則となる。
+\begin{eqnarray}
+	\alpha &=& \underset{i}{{\rm argmin}}\, R(\alpha_{i} | x) \nonumber\\
+	&=& \underset{i}{{\rm argmin}}\, 1 - {\rm P}(w_{i}|x) \nonumber\\
+	&=& \underset{i}{{\rm argmax}}\, {\rm P}(w_{i}|x) \label{max:bayse}
+\end{eqnarray}
+従って、誤り率最小化は事後確率を最大化するクラスを選ぶことで実現できる。
+尚、誤り率は以下のようなもののこと表す。
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\norm{-2}{1}{3}{blue!70!black, very thick}{10};
+		\norm{2}{4}{5}{red!70, very thick}{10};
+		\normpdf{2}{3.5}{red!30, domain = -3:-0.32, fill = red!20}{10} -- (-0.32, 0.05) --(-3, 0.05) --cycle;
+		\normpdf{-2}{1}{blue!70!black!30, domain = -0.26:1, fill = blue!70!black!30}{10} -- (-0.26, 0.05) -- (-0.26, 0.8) --cycle;
+		\draw [thick] (-5, 0) -- (7, 0);
+		\draw [blue!50] (-2, -2) -- (-2, 4.5) node [above, text = black] {$\mu_{A}$};
+		\draw [blue!30] (-3, 4.5) -- (-3, -0.1);
+		\draw [blue!30] (-4, 4.5) -- (-4, -0.1);
+		\draw [blue!30] (-1, 4.5) -- (-1, -0.1);
+		\draw [blue!30] (0, 4.5) -- (0, -0.1);
+		\draw [->] (-2, 3) -- (-3, 3) node [above] {$\sigma_{A}$};
+		\draw [red!50] (2, -2) -- (2, 3) node [above, text = black] {$\mu_{B}$};z
+		\draw [red!30] (3, 3) -- (3, -0.1);
+		\draw [red!30] (4, 3) -- (4, -0.1);
+		\draw [red!30] (1, 3) -- (1, -0.1);
+		\draw [red!30] (0, 3) -- (0, -0.1);
+		\draw [->] (2, 1) -- (3, 1) node [above] {$\sigma_{B}$};
+		\node (A) at (-0.3, 2) [above] {最小誤り識別時の境界};
+		\draw [very thick, green!70!black, text = black] (-0.3, -2) -- (-0.3, 1.5) node [above] {(等確率境界点)};
+		\draw [<-, very thick, blue!70!black, text = black] (-1, 0.1) to [out = -90, in = 30] (-4, -0.7) node [below] {BをAと誤る領域};
+		\draw [<-, very thick, blue!70!black, text = black] (0.5, 0.1) to [out = -90, in = 130] (3, -0.7) node [below] {AをBと誤る領域};
+		\draw [<->, very thick, green!70!black] (-2, -1.5) -- (-0.3, -1.5);
+		\draw [<->, very thick, green!70!black] (2, -1.5) -- (-0.3, -1.5);
+	\end{tikzpicture}
+\end{center}
+この図の様に最小誤り率は2クラスの場合は二つの分布の交点を通る直線を境界線としたときに誤り率が最小になる。\\
+式\eqref{max:bayse}の時、$w_{\alpha}$が送信されたと判断する復号法は最大事後確率復号と呼ばれ、これによりクラス識別が可能になるが、一般に
+すべての${\rm Pr}(w_{i}|x)$をすべての$x$に対して用意することは不可能であるため、最尤基準による復号を考える。
+\subsection{最尤基準による復号}\label{sec:saiyu}
+Bayesの定理により以下が成り立つ。
+\begin{eqnarray*}
+	{\rm Pr}(w_{i}|x) = \frac{{\rm Pr}(x|w_{i}){\rm Pr}(w_{i})}{{\rm Pr}(x)}
+\end{eqnarray*}
+よって、この時、${\rm Pr}(x)$はクラスに無関係。よって、以下のように変形できる
+\begin{eqnarray*}
+	{\rm argmax\, Pr}(w_{i}|x) = {\rm argmax\, Pr}(x|w_{i}){\rm Pr}(w_{i})
+\end{eqnarray*}
+これはクラスごとにデータを集め、分布を調べれば${\rm Pr}(x|w_{i})$は求まる。特に${\rm Pr}(w_{i})$はクラスによって変わらないとすれば以下のようになる。
+\begin{eqnarray*}
+	{\rm argmax\, Pr}(w_{i}|x) = {\rm argmax\, Pr}(x|w_{i})
+\end{eqnarray*}
+この求め方を最尤復号という。
+\section{最尤推定・EMアルゴリズム}
+\ref{sec:saiyu}より、${\rm Pr}(x|w_{i})$が求まればパターン認識ができるがこの確率をどのように求めるのかが問題となる。\\
+この時、常套手段として用いられるのは$w_{i}$から$x$への写像を確率モデル$M_{i}(a_{1}, a_{2}, \ldots, a_{N})$で表し、この確率モデルのパラメータを大量の学習データを用いて推定する。
+\subsection{最尤推定}
+カテゴリ$w_{i}$のデータを生成して、そのパターン$x_{1}, x_{2}, \ldots, x_{N}$を収集する。\\
+その後、各々のデータ$x_{j}$がカテゴリ$w_{i}$の確率モデルから生起する確率が高くなるようにモデルのパラメタ$\{\hat{a}_{k}^{i}\}$を調整する。
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0) node at (O) [above] {送信記号$w_{i}$};
+		\coordinate (O1) at ($(O) + (1, -0.75)$);
+		\coordinate (O2) at ($(O1) + (3.5, 1.5)$);
+		\draw [thick, ->] ($(O) + (-0.5, 0)$) --++(0:1.5cm);
+		\draw (O1) rectangle (O2);
+		\coordinate (A) at ($(O1) + (1.7, 0.7)$) node at (A) {\large 符号化＋観測雑音};
+		\coordinate (O3) at ($(O2) + (1.5, -0.25)$) node at (O3) [right=0.75] {$x_{1}$};
+		\coordinate (O3) at ($(O2) + (1.5, -1.25)$) node at (O3) [right=0.75] {$\vdots$};
+		\coordinate (O3) at ($(O2) + (1.5, -1.95)$) node at (O3) [right=0.75] {$x_{N}$};
+		\coordinate (O3) at ($(O2) + (1.5, -0.75)$) node at (O3) [right=0.75] {$x_{2}$};
+		\draw [thick, <-] (O3) --++(180:1.5cm);
+		\coordinate (O) at ($(O) + (0, -3)$) node at (O) [above] {送信記号$w_{i}$};
+		\coordinate (O1) at ($(O) + (1, -0.75)$);
+		\coordinate (O2) at ($(O1) + (3.5, 1.5)$);
+		\draw [thick, ->] ($(O) + (-0.5, 0)$) --++(0:1.5cm);
+		\draw (O1) rectangle (O2);
+		\coordinate (A) at ($(O1) + (1.5, 1)$) node at (A) {\Large 確率モデル};
+		\coordinate (A1) at ($(A) + (0.5, -0.45)$) node at (A1) [below] {$M^{i}\left(a_{1}^{i}, \, a_{2}^{i}, \, \ldots \, a_{N}^{i}\right)$};
+		\coordinate (A1) at ($(A) + (0.5, -2)$) node at (A1) [below] {$\{\hat{a}_{k}^{i}\} = \underset{\{\hat{a}_{k}^{i}\}}{{\rm argmax}}\prod_{j = 1}^{N}{\rm Pr}(x_{j};\{\hat{a}_{k}^{i}\})$};
+		\coordinate (O3) at ($(O2) + (1.5, -0.25)$) node at (O3) [right=0.75] {$x_{1}\;\; :{\rm Pr}(x_{1};\{a_{k}^{i}\})$};
+		\coordinate (O3) at ($(O2) + (1.5, -1.25)$) node at (O3) [right=0.75] {$\vdots$};
+		\coordinate (O3) at ($(O2) + (1.5, -2.45)$) node at (O3) [right=0.75] {$\vdots$};
+		\coordinate (O3) at ($(O2) + (1.5, -1.95)$) node at (O3) [right=0.75] {$x_{j}\;\; :{\rm Pr}(x_{N};\{a_{k}^{i}\})$};
+		\coordinate (O3) at ($(O2) + (1.5, -3)$) node at (O3) [right=0.75] {$x_{N}\;\; :{\rm Pr}(x_{N};\{a_{k}^{i}\})$};
+		\coordinate (O3) at ($(O2) + (1.5, -0.75)$) node at (O3) [right=0.75] {$x_{2}\;\; :{\rm Pr}(x_{2};\{a_{k}^{i}\})$};
+		\draw [thick, <-] (O3) --++(180:1.5cm);
+	\end{tikzpicture}
+\end{center}
+\subsection{最尤推定の例}
+確率分布が正規分布であり、以下のようなモデルの時、尤度は式\eqref{yuudo}のようになる。
+\begin{eqnarray}
+	M &=& \{\mu, \sigma^{2}\} \nonumber \\
+	{\rm Pr}(x;\mu, \sigma^{2}) &=& \frac{1}{\sqrt{2 \pi \sigma^{2}}}{\rm exp}\left(-\frac{1}{2}\, \frac{(x - \mu)^{2}}{\sigma^{2}}\right) \nonumber\\
+	\Longrightarrow 
+	P &=& \prod_{j = 1}^{N}{\rm Pr}(x_{j};\mu, \sigma^{2}) \nonumber\\
+	\log P &=& \sum_{j = 1}^{N}\log {\rm Pr}(x_{j};\mu, \sigma^{2}) \nonumber\\
+		  &=& -\frac{N}{2}\log 2\pi - \frac{N}{2}\log \sigma^{2} - \sum_{j = 1}^{N}\frac{1}{2}\, \frac{(x_{j} - \mu)^{2}}{\sigma^{2}}\label{yuudo}
+\end{eqnarray}
+ここで、$\log P$を各パラメタで偏微分して0とおく
+\begin{eqnarray*}
+	&&\frac{\partial \log P}{\partial \mu} = - \sum_{j = 1}^{N}\frac{x_{j} - \mu}{\sigma^{2}} = 0\\
+	&&\mu = \frac{1}{N}\sum_{j = 1}^{N}x_{j}\\
+	&&\frac{\partial \log P}{\partial \sigma^{2}} = -\frac{N}{2\sigma^{2}} + \sum_{j = 1}^{N}\frac{(x_{j} - \mu)^{2}}{2\sigma^{4}} = 0\\
+	&&\sigma^{2} = \frac{1}{N}\sum_{j = 1}^{N}(x_{j} - \mu)^{2}
+\end{eqnarray*}
+確率分布が混合正規分布の時、
+\begin{eqnarray*}
+	M &=& \{\mu_{1}, \sigma_{1}^{2}, m_{1}, \mu_{2}, \sigma_{2}^{2}, m_{2}, \mu_{3}, \sigma_{3}^{2}, m_{3}\}\\
+	{\rm P}\left(x;\mu_{k}, \sigma_{k}^{2}\right) &=& \frac{1}{\sqrt{2 \pi \sigma_{k}^{2}}}{\rm exp}\left(-\frac{1}{2}\, \frac{\left(x - \mu_{k}\right)^{2}}{\sigma_{k}^{2}}\right)\\
+	{\rm Pr}\left(x; M\right) &=& \sum_{k = 1}^{3}m_{k}{\rm P}\left(x;\mu_{k}, \sigma_{k}^{2}\right), \sum_{k = 1}^{3} m_{k} = 1
+\end{eqnarray*}
+この時はパラメタ毎に偏微分して0とおいても解けないので、EMアルゴリズムを用いて推定する。
+\subsection{EMアルゴリズム}
+モデル$M$の出力$x$の振る舞いを決めるのに観測できないデータ（潜在変数）$y$が関与する枠組みにおいて観測できるデータ$x$のみを用いて尤度${\rm Pr}(x|M)$を最大化する
+パラメタ$M$を求める問題を解く。
+\begin{equation}
+	\underset{M}{max}\prod {\rm Pr}(x|M)\label{em}
+\end{equation}
+観測不能な$y$が存在するなら、式\eqref{em}は簡単には実行できないが、$y$の出力を仮定すると$(x, y)$の同時確率は計算できるため、式\eqref{em2}は容易に実行できる。
+\begin{equation}
+	\underset{M}{max}\prod {\rm Pr}((x, y)|M)\label{em2}
+\end{equation}
+よって、式\eqref{em}の問題を\eqref{em2}に置き換えて解く。このことを実現するには$x$とモデルの初期推定値$M$が与えられた条件における完全データ$(x, y)$に対する$\log {\rm Pr}(x|M')$の期待値を
+最大化する問題を考える。
+\begin{eqnarray*}
+	&&\underset{M'}{max}\, E\left[\log {\rm Pr}(x|M')|x, M\right]\\
+	\mbox{ここで}E\left[f(x, y)|x, M\right] &=& \sum f(x, y_{i}){\rm Pr}(y_{i}|x, M)\\
+	\mbox{この時、}
+	E\left[\log {\rm Pr}(x|M')|x, M\right] &=& \sum {\rm Pr}(y_{i}|x, M) \log {\rm Pr}(x|M')\\
+										   &=& \log {\rm Pr}(x|M')\\
+										   &=& L (x, M')
+\end{eqnarray*}
+よってこの時、以下のことが成り立つ。
+\begin{eqnarray*}
+	L(x, M') &=& E\left[\log {\rm Pr}(y_{i} | x, M')|x, M \right]\\
+			 &=& \sum {\rm Pr}(y_{i}|x, M) \log {\rm Pr}(x|M')\\
+			 &=& \sum {\rm Pr}(y_{i}|x, M) \log \frac{{\rm Pr}(y_{j}|x, M'){\rm Pr}(x|M')}{{\rm Pr}(y_{j}|x, M')}\\
+			 &=& \sum {\rm Pr}(y_{i}|x, M) \log \frac{{\rm Pr}(x, y_{j}| M')}{{\rm Pr}(y_{j}|x, M')}\\
+			 &=& \sum {\rm Pr}(y_{i}|x, M) \log {\rm Pr}(x, y_{j}| M') - \sum {\rm Pr}(y_{i}|x, M) \log {\rm Pr}(y_{j}| x, M')\\
+	\mbox{ここで}&&\\
+	Q(M, M') &=& E\left[\log {\rm Pr}(x, y|M')|x, M\right]\\
+			 &=& \sum {\rm Pr}(y_{i}|x, M) \log {\rm Pr}(x, y_{j}| M')\\
+	H(M, M') &=& E\left[\log {\rm Pr}(y|x, M')|x, M\right]\\
+			 &=& \sum {\rm Pr}(y_{i}|x, M) \log {\rm Pr}(y_{j}| x, M')\\
+	\mbox{とおくと、次式が成り立つ}&&\\
+	L(x, M') &=& Q(M, M') - H(M, M')
+\end{eqnarray*}
+$Q(M, M')$はモデルの初期値と学習データで条件づけられた完全データの対数尤度の期待値である。
+$H(M, M') - H(M, M)$はダイバージェンスであるため、
+\begin{eqnarray*}
+	&&H(M, M') \leq H(M, M)\\
+	\because H(M, M') - H(M, M) &=& \sum {\rm Pr}(y_{i}|x, M)\left\{ \log {\rm Pr}(y_{j}| x, M') -  \log {\rm Pr}(y_{j}| x, M)\right\}\\
+								&=& \sum {\rm Pr}(y_{i}|x, M)\log \frac{{\rm Pr}(y_{j}| x, M')}{{\rm Pr}(y_{j}| x, M)}\\
+								&\leq& \sum {\rm Pr}(y_{i}|x, M)\left(\frac{{\rm Pr}(y_{j}| x, M')}{{\rm Pr}(y_{j}| x, M)} - 1\right) \\
+								&\leq& \sum \left({\rm Pr}(y_{j}| x, M) - {\rm Pr}(y_{j}| x, M')\right)
+\end{eqnarray*}
+よって、$H(M, M')$はパラメタ変化に対して単調減少関数である。よって、$Q(M, M')$を最大化するように$M'$を変化させれば$L(x, M')$はは必ず増大する。
+従って、$Q(M, M')$を最大化する$M'$を求めては$M = M'$とし、また、$Q(M, M')$を最大化する$M'$を求めるという処理を繰り返せば$M'$は$L(x, M')$の極大値を与える$M'$に収束する。
+$\rightarrow$不完全データの対数尤度$\log {\rm Pr}(x|M)$の最大化問題が完全データ$\log {\rm Pr}(x, y|M)$の最大化する問題に置換された。
+よって、具体的なアルゴリズムとしては以下のようになる。
+\begin{enumerate}
+	\item 適当な初期モデル$M$を選ぶ
+	\item 与えられた学習データ${\rm x}$を用いて対数尤度$\log {\rm P}$の期待値$Q(M, M')$を最大化する$M'$を求める。\label{enum:return}
+	\begin{enumerate}[{2}-1]
+		\item ${\rm Pr}\left(y_{j}|x_{j}, M\right)$を求める。
+		\item $Q(M, M') = \sum_{j = 1}^{12}{\rm Pr}\left(y_{j} | x_{j}, M\right) \log {\rm Pr}\left(x_{j}, y_{j} | M'\right)$を最大化する$M'$を求める
+	\end{enumerate}
+	\item 収束していれば$M'$を答えとして終了する
+	\item $M = M'$とおいて\ref{enum:return}に戻る。
+\end{enumerate}
+\subsection{例題}
+３つの壺があって、それぞれの壺には正規分布に従ってボールが入っているものとする。適当な確率で壺を選んでその壺からボールを取り出し、
+そのボールの重さを報告してまた壺に戻すという操作を繰り返したところ、図\ref{houkoku}のような報告になった。各壺にあるボールの重さの分布をEMアルゴリズムで求めよ。
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0);
+		\coordinate (H) at ($(O) + (0, -1)$) node at (H) {重さ:};
+		\draw [fill = red!70, red!70] ($(O) + (1, 0)$) circle [radius = 0.3];
+		\coordinate (H) at ($(O) + (1, -1)$) node at (H) {8};
+		\draw [fill = red!70, red!70] ($(O) + (2, 0)$) circle [radius = 0.1];
+		\coordinate (H) at ($(O) + (2, -1)$) node at (H) {3};
+		\draw [fill = red!70, red!70] ($(O) + (3, 0)$) circle [radius = 0.2];
+		\coordinate (H) at ($(O) + (3, -1)$) node at (H) {6};
+		\draw [fill = red!70, red!70] ($(O) + (4, 0)$) circle [radius = 0.32];
+		\coordinate (H) at ($(O) + (4, -1)$) node at (H) {9};
+		\draw [fill = red!70, red!70] ($(O) + (5, 0)$) circle [radius = 0.12];
+		\coordinate (H) at ($(O) + (5, -1)$) node at (H) {7};
+		\draw [fill = red!70, red!70] ($(O) + (6, 0)$) circle [radius = 0.2];
+		\coordinate (H) at ($(O) + (6, -1)$) node at (H) {6};
+		\draw [fill = red!70, red!70] ($(O) + (7, 0)$) circle [radius = 0.08];
+		\coordinate (H) at ($(O) + (7, -1)$) node at (H) {2};
+		\draw [fill = red!70, red!70] ($(O) + (8, 0)$) circle [radius = 0.2];
+		\coordinate (H) at ($(O) + (8, -1)$) node at (H) {6};
+		\draw [fill = red!70, red!70] ($(O) + (9, 0)$) circle [radius = 0.1];
+		\coordinate (H) at ($(O) + (9, -1)$) node at (H) {4};
+		\draw [fill = red!70, red!70] ($(O) + (10, 0)$) circle [radius = 0.1];
+		\coordinate (H) at ($(O) + (10, -1)$) node at (H) {4};
+		\draw [fill = red!70, red!70] ($(O) + (11, 0)$) circle [radius = 0.2];
+		\coordinate (H) at ($(O) + (11, -1)$) node at (H) {5};
+		\draw [fill = red!70, red!70] ($(O) + (12, 0)$) circle [radius = 0.3];
+		\coordinate (H) at ($(O) + (12, -1)$) node at (H) {7};
+	\end{tikzpicture}
+	\caption{報告結果}
+	\label{houkoku}
+\end{figure}
+ただし、パラメタの初期値は式\eqref{pro1}, \eqref{pro2}, \eqref{pro3}, のとおりとする。
+\begin{eqnarray}
+	{\rm P(A)} = \frac{1}{3}, {\rm M_{A}} = \left\{\mu_{A}, \; \sigma_{A}{}^{2} \right\} = \{8, 1.0\} \label{pro1}\\
+	{\rm P(B)} = \frac{1}{3}, {\rm M_{B}} = \left\{\mu_{B}, \; \sigma_{B}{}^{2} \right\} = \{3, 1.0\} \label{pro2}\\
+	{\rm P(C)} = \frac{1}{3}, {\rm M_{C}} = \left\{\mu_{C}, \; \sigma_{C}{}^{2} \right\} = \{6, 1.0\} \label{pro3}
+\end{eqnarray}
+\subsection{解答}
+この問題は正規分布が3つ重なった確率分布$M = \{\mu_{1}, \sigma_{1}^{2}, m_{1}, \mu_{2}, \sigma_{2}^{2}, m_{2}, \mu_{3}, \sigma_{3}^{2}, m_{3}\}$の混合正規分布であるため、EMアルゴリズムを使用できる。
+% よってEMアルゴリズムに基づいて図\ref{em}のようにjavaでコードを書いた。
+% \lstinputlisting[caption= EMアルゴリズム実装コード, label=em, language = Java, numbers = left]{code/EM.java}
+よって、EMアルゴリズムに基づき、書いたコードの実行結果は図\ref{result:em}のようになる。
+\lstinputlisting[caption = 実行結果, label = result:em, language =, frame = single]{code/test.txt}
+従って、求める分布は以下のようになる。
+\begin{eqnarray}
+	&&{\rm P(A)} = 0.1629, \; {\rm M_{A}} = \left\{\mu_{A}, \; \sigma_{A}^{2}\right\} = \{8.497, \; 0.2798\} \\
+	&&{\rm P(B)} = 0.4142, \; {\rm M_{B}} = \left\{\mu_{B}, \; \sigma_{B}^{2}\right\} = \{3.634, \; 1.201\} \\
+	&&{\rm P(C)} = 0.4230, \; {\rm M_{C}} = \left\{\mu_{C}, \; \sigma_{C}^{2}\right\} = \{6.370, \; 0.3511\}
+\end{eqnarray}
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\draw [thick] (0, 0) --++(12, 0);
+		\coordinate (mua) at (8.4967, 0) node at (mua) [below] {$\mu_{A}$};
+		\coordinate (mub) at (3.6340, 0) node at (mub) [below] {$\mu_{B}$};
+		\coordinate (muc) at (6.3703, 0) node at (muc) [below] {$\mu_{C}$};
+		\draw [black!70] (mua) --++(90:3.5);
+		\draw [black!70] (mub) --++(90:3.5);
+		\draw [black!70] (muc) --++(90:3.5);
+		\coordinate (ma) at ($(mua) + (0, 1.4)$) node at (ma){$m_{A}$};
+		\coordinate (mb) at ($(mub) + (0, 1.8)$) node at (mb){$m_{B}$};
+		\coordinate (mc) at ($(muc) + (0, 3)$) node at (mc){$m_{C}$};
+		\norm{8.4967}{0.2798}{3}{red!70, very thick}{10*0.1629};
+		\norm{3.6340}{1.2015}{3}{blue!70!black, very thick}{10*0.4142};
+		\norm{6.3703}{0.3511}{3}{green!70!black, very thick}{10*0.4230};
+	\end{tikzpicture}
+\end{center}
+\section{動的計画法}
+動的計画法とは逐次決定過程の最適化問題を解く方法のことをいう。
+\subsection{逐次決定過程}
+逐次決定過程とは過程の各状態において意思決定者が何らかの決定を選択すると状態遷移が起こり、対応する利得（あるいは費用）が発生すると考える数学モデル。\\
+過程から発生する総利得（費用）を最適化する政策（すなわち決定の系列）を求めようとすることが、逐次決定過程の最適化問題。
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0);
+		%==================================================================================================================
+		%So周り
+		%So本体
+		\draw [fill = red!30] (O) circle [radius = 0.5];
+		\draw (O) node {$S_{0}$};
+		%==================================================================================================================
+		%2列目の一番上のノード
+		\draw [->] (O)++(40:0.5) --++(40:1.5) node (S) {};
+		\draw [very thick] (O)++(40:0.5)++(40:0.75) node [above] {$a_{*}$};
+		\coordinate (S) at ($(S)!0.5cm!180:(O)$);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%2列目の一番上から3列目の一番上へ
+		\draw [->] (S)++(-20:0.5) -- +(-20:1.5) node (S2) {};
+		\coordinate (S2) at ($(S2)!0.5cm!180:(S)$);
+		\draw (S2) circle [radius = 0.5];
+		\draw (S2) node {$S_{*}$};
+		%3列目の一番上からの矢印
+		\draw [->] (S2)++(20:0.5) --++(20:0.5);
+		\draw [->] (S2)++(0:0.5) --++(0:0.5);
+		\draw [->] (S2)++(-20:0.5) --++(-20:0.5);
+		%2列目の一番上から3列目の２番目へ
+		\coordinate (S3) at ($(S2) + (0, -2)$);
+		\draw [->] ($(S)!0.5cm!0:(S3)$) -- ($(S3)!0.5cm!0:(S)$);
+		\draw [fill = red!30] (S3) circle [radius = 0.5];
+		\draw (S3) node {$S_{2}$};
+		%3列目の2番からの矢印
+		\draw [red!50, ->] (S3)++(20:0.5) --++(20:0.5);
+		\draw [->] (S3)++(0:0.5) --++(0:0.5);
+		\draw [->] (S3)++(-20:0.5) --++(-20:0.5);
+		\draw (S3)++(0:2) node {・・・};
+		%==================================================================================================================
+		%Soから2列目の2番目へ
+		\coordinate (S1) at ($(S) + (0, -2)$);
+		\draw [red!50, ->] ($(O)!0.5cm!0:(S1)$) -- ($(S1)!0.5cm!0:(O)$);
+		\draw [red!50] ($(O)!0.5!0:(S1)$) node [above] {$a_{1}$};
+		\draw [fill = red!30] (S1) circle [radius = 0.5];
+		\draw (S1) node {$S_{1}$};
+		%2列目の2番めから3列目の１番目へ
+		\draw [->] ($(S1)!0.5cm!0:(S2)$) -- ($(S2)!0.5cm!0:(S1)$);
+		\draw ($(S2)!0.5!0:(S1)$) node [above] {$a_{*}$};
+		%2列目の2番めから3列目の２番目へ
+		\draw [->, red!50] ($(S1)!0.5cm!0:(S3)$) -- ($(S3)!0.5cm!0:(S1)$);
+		\draw [red!50] ($(S1)!0.5!0:(S3)$) node [above] {$a_{2}$};
+		%2列目の2番めから3列目の３番目へ
+		\coordinate (S4) at ($(S3) + (0, -2)$);
+		\draw [->] ($(S1)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S1)$);
+		\draw ($(S4)!0.5!0:(S1)$) node [above] {$a_{*}$};
+		\draw (S4) circle [radius = 0.5];
+		\draw (S4) node {$S_{*}$};
+		%3列目の３番目からの矢印
+		\draw [->] (S4)++(20:0.5cm) --++(20:0.5cm);
+		\draw [->] (S4)++(0:0.5cm) --++(0:0.5cm);
+		\draw [->] (S4)++(-20:0.5cm) --++(-20:0.5cm);
+		%==================================================================================================================
+		%2列目の3番目
+		\coordinate (S) at ($(S1) + (0, -2)$);
+		\draw [->] ($(O)!0.5cm!0:(S)$) -- ($(S)!0.5cm!0:(O)$);
+		\draw ($(O)!0.5!0:(S)$) node [above] {$a_{*}$};
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%2列目の3番目から3列目へ
+		\draw [->] ($(S)!0.5cm!0:(S2)$) -- ($(S2)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S3)$) -- ($(S3)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%2列目の4番目
+		\coordinate (S) at ($(S) + (0, -2)$);
+		\draw [->] ($(O)!0.5cm!0:(S)$) -- ($(S)!0.5cm!0:(O)$);
+		\draw ($(O)!0.5!0:(S)$) node [above] {$a_{*}$};
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%2列目の4番目から3列目へ
+		\draw [->] ($(S)!0.5cm!0:(S3)$) -- ($(S3)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%右半分
+		%1列目一番上
+		\coordinate (S) at ($(S3) + (4, 3)$);
+		\draw [<-] (S)++(160:0.5) --++(160:0.5);
+		\draw [<-] (S)++(180:0.5) --++(180:0.5);
+		\draw [<-] (S)++(200:0.5) --++(200:0.5);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%==================================================================================================================
+		%Si
+		\draw [->] (S)++(-30:0.5) -- ++(-30:2) node (Si) {};
+		\coordinate (Si) at ($(Si)!0.5cm!180:(S)$);
+		\draw [fill = red!30] (Si) circle [radius = 0.5];
+		\draw (Si) node {$S_{i}$};
+		\draw [->] (Si)++(20:0.5) --++(20:0.5);
+		\draw [red!50, ->] (Si)++(0:0.5) --++(0:0.5);
+		\draw [->] (Si)++(-20:0.5) --++(-20:0.5);
+		%==================================================================================================================
+		%2列目の2番目
+		\coordinate (S4) at ($(Si) + (0, -2)$);
+		\draw (S4) circle [radius = 0.5];
+		\draw (S4) node {$S_{*}$};
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%1列目2番目
+		\coordinate (S) at ($(S) + (0, -2)$);
+		\draw [fill = red!30] (S) circle [radius = 0.5];
+		\draw (S) node {$S_{i - 1}$};
+		\draw [<-] (S)++(160:0.5) --++(160:0.5);
+		\draw [red!50, <-] (S)++(180:0.5) --++(180:0.5);
+		\draw [<-] (S)++(200:0.5) --++(200:0.5);
+		\draw [->, red!50] ($(S)!0.5cm!0:(Si)$) -- ($(S)!0.8!0:(Si)$);
+		\draw [red!50, dashed] (S3)++(20:1) -- ($(S) + (-1, 0)$);
+		%siへの矢印
+		\draw ($(S)!0.5!0:(Si)$) node [above, red!50] {$a_{i}$};
+		%2番目への矢印
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%2列目の3番目
+		\coordinate (S5) at ($(S4) + (0, -2)$);
+		\draw (S5) circle [radius = 0.5];
+		\draw (S5) node {$S_{*}$};
+		\draw [->] ($(S)!0.5cm!0:(S5)$) -- ($(S5)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%1列目の3番目
+		\coordinate (S) at ($(S) + (0, -2)$);
+		\draw [<-] (S)++(160:0.5) --++(160:0.5);
+		\draw [<-] (S)++(180:0.5) --++(180:0.5);
+		\draw [<-] (S)++(200:0.5) --++(200:0.5);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%2列目への矢印
+		\draw [->] ($(S)!0.5cm!0:(Si)$) -- ($(Si)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%1列目の4番目	
+		\coordinate (S) at ($(S) + (0, -2)$);
+		\draw [<-] (S)++(160:0.5) --++(160:0.5);
+		\draw [<-] (S)++(180:0.5) --++(180:0.5);
+		\draw [<-] (S)++(200:0.5) --++(200:0.5);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%2列目への矢印
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S5)$) -- ($(S5)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%Goal
+		\draw ($(S4) + (1, 0)$) node (SG) {・・・};
+		\coordinate (SG) at ($(SG) + (2, 0)$);
+		\draw [fill = red!30] (SG) circle [radius = 0.5];
+		\draw (SG) node {$S_{G}$};
+		\draw [<-, red!50] (SG)++(160:0.5) --++(160:0.5) node [above] {$a_{G}$};
+		\draw [<-] (SG)++(180:0.5) --++(180:0.5);
+		\draw [<-] (SG)++(200:0.5) --++(200:0.5);
+	\end{tikzpicture}
+\end{center}
+\subsection{ベルマンの最適性の原理}
+\begin{enumerate}[◎]
+	\item 最適政策では初期状態、初期の決定が何であろうと以後の政策は最初の遷移から生じた状態に
+	関して適切でなければならない。
+	\item ある期間を通じての最適問題の解として最適政策は元々の問題を部分区間に区切った部分最適問題の解を一部として持つ。
+\end{enumerate}
+最適政策上にある状態を考えると、$S_{2}$から$S{G}$への最適政策も赤のパスに一致する。\\
+この時、下のように青のパスが最適政策とする場合を考える。
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0);
+		%==================================================================================================================
+		%So周り
+		%So本体
+		\draw [fill = red!30] (O) circle [radius = 0.5];
+		\draw (O) node {$S_{0}$};
+		%==================================================================================================================
+		%2列目の一番上のノード
+		\draw [->] (O)++(40:0.5) --++(40:1.5) node (S) {};
+		\coordinate (S) at ($(S)!0.5cm!180:(O)$);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%2列目の一番上から3列目の一番上へ
+		\draw [->] (S)++(-20:0.5) -- +(-20:1.5) node (S2) {};
+		\coordinate (S2) at ($(S2)!0.5cm!180:(S)$);
+		\draw (S2) circle [radius = 0.5];
+		\draw (S2) node {$S_{*}$};
+		%3列目の一番上からの矢印
+		\draw [->] (S2)++(20:0.5) --++(20:0.5);
+		\draw [->] (S2)++(0:0.5) --++(0:0.5);
+		\draw [->] (S2)++(-20:0.5) --++(-20:0.5);
+		%2列目の一番上から3列目の２番目へ
+		\coordinate (S3) at ($(S2) + (0, -2)$);
+		\draw [->] ($(S)!0.5cm!0:(S3)$) -- ($(S3)!0.5cm!0:(S)$);
+		\draw [fill = red!70!black] (S3) circle [radius = 0.5];
+		\draw (S3) node {$S_{2}$};
+		%3列目の2番からの矢印
+		\draw [red!50, ->] (S3)++(20:0.5) --++(20:0.5);
+		\draw [blue!50!black, ->] (S3)++(0:0.5) --++(0:0.5);
+		\draw [->] (S3)++(-20:0.5) --++(-20:0.5);
+		\draw (S3)++(0:2) node {・・・};
+		%==================================================================================================================
+		%Soから2列目の2番目へ
+		\coordinate (S1) at ($(S) + (0, -2)$);
+		\draw [red!50, ->] ($(O)!0.5cm!0:(S1)$) -- ($(S1)!0.5cm!0:(O)$);
+		\draw [fill = red!30] (S1) circle [radius = 0.5];
+		\draw (S1) node {$S_{1}$};
+		%2列目の2番めから3列目の１番目へ
+		\draw [->] ($(S1)!0.5cm!0:(S2)$) -- ($(S2)!0.5cm!0:(S1)$);
+		%2列目の2番めから3列目の２番目へ
+		\draw [->, red!50] ($(S1)!0.5cm!0:(S3)$) -- ($(S3)!0.5cm!0:(S1)$);
+		%2列目の2番めから3列目の３番目へ
+		\coordinate (S4) at ($(S3) + (0, -2)$);
+		\draw [->] ($(S1)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S1)$);
+		\draw (S4) circle [radius = 0.5];
+		\draw (S4) node {$S_{*}$};
+		%3列目の３番目からの矢印
+		\draw [->] (S4)++(20:0.5cm) --++(20:0.5cm);
+		\draw [->] (S4)++(0:0.5cm) --++(0:0.5cm);
+		\draw [->] (S4)++(-20:0.5cm) --++(-20:0.5cm);
+		%==================================================================================================================
+		%2列目の3番目
+		\coordinate (S) at ($(S1) + (0, -2)$);
+		\draw [->] ($(O)!0.5cm!0:(S)$) -- ($(S)!0.5cm!0:(O)$);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%2列目の3番目から3列目へ
+		\draw [->] ($(S)!0.5cm!0:(S2)$) -- ($(S2)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S3)$) -- ($(S3)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%2列目の4番目
+		\coordinate (S) at ($(S) + (0, -2)$);
+		\draw [->] ($(O)!0.5cm!0:(S)$) -- ($(S)!0.5cm!0:(O)$);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%2列目の4番目から3列目へ
+		\draw [->] ($(S)!0.5cm!0:(S3)$) -- ($(S3)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%==================================================================================================================
+		%==================================================================================================================
+		%右半分
+		%1列目一番上
+		\coordinate (S) at ($(S3) + (4, 3)$);
+		\draw [<-] (S)++(160:0.5) --++(160:0.5);
+		\draw [<-] (S)++(180:0.5) --++(180:0.5);
+		\draw [<-] (S)++(200:0.5) --++(200:0.5);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%==================================================================================================================
+		%Si
+		\draw [->] (S)++(-30:0.5) -- ++(-30:2) node (Si) {};
+		\coordinate (Si) at ($(Si)!0.5cm!180:(S)$);
+		\draw [fill = red!30] (Si) circle [radius = 0.5];
+		\draw (Si) node {$S_{i}$};
+		\draw [->] (Si)++(20:0.5) --++(20:0.5);
+		\draw [red!50, ->] (Si)++(0:0.5) --++(0:0.5);
+		\draw [->] (Si)++(-20:0.5) --++(-20:0.5);
+		%==================================================================================================================
+		%2列目の2番目
+		\coordinate (S4) at ($(Si) + (0, -2)$);
+		\draw [fill = blue!50] (S4) circle [radius = 0.5];
+		\draw (S4) node {$S_{*}$};
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		\draw [->] (S4)++(20:0.5) -- ++(20:0.5);
+		\draw [->, blue!50!black] (S4)++(0:0.5) -- ++(0:0.5);
+		\draw [->] (S4)++(-20:0.5) -- ++(-20:0.5);
+		%==================================================================================================================
+		%1列目2番目
+		\coordinate (S) at ($(S) + (0, -2)$);
+		\draw [fill = red!30] (S) circle [radius = 0.5];
+		\draw (S) node {$S_{i - 1}$};
+		\draw [<-] (S)++(160:0.5) --++(160:0.5);
+		\draw [red!50, <-] (S)++(180:0.5) --++(180:0.5);
+		\draw [<-] (S)++(200:0.5) --++(200:0.5);
+		\draw [->, red!50] ($(S)!0.5cm!0:(Si)$) -- ($(S)!0.8!0:(Si)$);
+		\draw [red!50, dashed] (S3)++(20:1) -- ($(S) + (-1, 0)$);
+		%2番目への矢印
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%2列目の3番目
+		\coordinate (S5) at ($(S4) + (0, -2)$);
+		\draw (S5) circle [radius = 0.5];
+		\draw (S5) node {$S_{*}$};
+		\draw [->] ($(S)!0.5cm!0:(S5)$) -- ($(S5)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%1列目の3番目
+		\coordinate (S) at ($(S) + (0, -2)$);
+		\draw [<-, blue!50!black] (S)++(160:0.5) --++(160:0.5) node (T) {};
+		\draw [<-] (S)++(180:0.5) --++(180:0.5);
+		\draw [<-] (S)++(200:0.5) --++(200:0.5);
+		\draw [fill = blue!50] (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		\draw [blue!50!black, dashed] (S3)++(0:1) -- ($(S)!1cm!0:(T)$);
+		%2列目への矢印
+		\draw [->] ($(S)!0.5cm!0:(Si)$) -- ($(Si)!0.5cm!0:(S)$);
+		\draw [->, blue!50!black] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%1列目の4番目	
+		\coordinate (S) at ($(S) + (0, -2)$);
+		\draw [<-] (S)++(160:0.5) --++(160:0.5);
+		\draw [<-] (S)++(180:0.5) --++(180:0.5);
+		\draw [<-] (S)++(200:0.5) --++(200:0.5);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%2列目への矢印
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S5)$) -- ($(S5)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%Goal
+		\draw ($(S4) + (2, 0)$) node (SG) {・・・};
+		\coordinate (SG) at ($(SG) + (1, 1)$);
+		\draw [fill = red!30] (SG) circle [radius = 0.5];
+		\draw (SG) node {$S_{G}$};
+		\draw [<-, red!50] (SG)++(160:0.5) --++(160:0.5) node (T) {};
+		\draw [<-] (SG)++(180:0.5) --++(180:0.5);
+		\draw [<-, blue!50!black] (SG)++(200:0.5) --++(200:0.5) node (U) {};
+		\draw [dashed, red!50] ($(Si) + (1, 0)$) -- ($(SG)!1cm!0:(T)$);
+		\draw [dashed, blue!50!black] ($(S4) + (1, 0)$) -- ($(SG)!1cm!0:(U)$);
+	\end{tikzpicture}
+\end{center}
+この時、仮に青のパスが$S_{2}$から$S_{G}$までの最適政策なら全体の最適政策も
+$S_{0}\rightarrow S_{2} \rightarrow S_{G}$となって仮定に反する。\\
+\begin{center}
+	\begin{tikzpicture}[>=stealth]
+		\coordinate (O) at (0, 0);
+		%==================================================================================================================
+		%So周り
+		%So本体
+		\draw [fill = red!30] (O) circle [radius = 0.5];
+		\draw (O) node {$S_{0}$};
+		%==================================================================================================================
+		%2列目の一番上のノード
+		\draw [blue!50, ->] (O)++(40:0.5) --++(40:1.5) node (S) {};
+		\coordinate (S) at ($(S)!0.5cm!180:(O)$);
+		\draw [fill = blue!50] (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		\draw ($(S) + (0, 0.5)$) node [above] {$A_{1}$};
+		%2列目の一番上から3列目の一番上へ
+		\draw [red!50, ->] (S)++(-20:0.5) -- +(-20:1.5) node (S2) {};
+		\coordinate (S2) at ($(S2)!0.5cm!180:(S)$);
+		\draw [fill = red!70!black] (S2) circle [radius = 0.5];
+		\draw (S2) node {$S_{*}$};
+		\draw ($(S2) + (0, 0.5)$) node [above] {$B$};
+		%3列目の一番上からの矢印
+		\draw [->] (S2)++(20:0.5) --++(20:0.5);
+		\draw [->] (S2)++(0:0.5) --++(0:0.5);
+		\draw [->] (S2)++(-20:0.5) --++(-20:0.5);
+		%2列目の一番上から3列目の２番目へ
+		\coordinate (S3) at ($(S2) + (0, -2)$);
+		\draw [->] ($(S)!0.5cm!0:(S3)$) -- ($(S3)!0.5cm!0:(S)$);
+		\draw (S3) circle [radius = 0.5];
+		\draw (S3) node {$S_{2}$};
+		%3列目の2番からの矢印
+		\draw [red!50, ->] (S3)++(20:0.5) --++(20:0.5);
+		\draw [blue!50!black, ->] (S3)++(0:0.5) --++(0:0.5);
+		\draw [->] (S3)++(-20:0.5) --++(-20:0.5);
+		\draw (S3)++(0:2) node {・・・};
+		%==================================================================================================================
+		%Soから2列目の2番目へ
+		\coordinate (S1) at ($(S) + (0, -2)$);
+		\draw [blue!50, ->] ($(O)!0.5cm!0:(S1)$) -- ($(S1)!0.5cm!0:(O)$);
+		\draw [fill = blue!50] (S1) circle [radius = 0.5];
+		\draw (S1) node {$S_{1}$};
+		\draw ($(S1) + (0, 0.5)$) node [above] {$A_{2}$};
+		%2列目の2番めから3列目へ
+		\draw [->, red!50] ($(S1)!0.5cm!0:(S2)$) -- ($(S2)!0.5cm!0:(S1)$);
+		\draw [->] ($(S1)!0.5cm!0:(S3)$) -- ($(S3)!0.5cm!0:(S1)$);
+		\coordinate (S4) at ($(S3) + (0, -2)$);
+		\draw [->] ($(S1)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S1)$);
+		\draw (S4) circle [radius = 0.5];
+		\draw (S4) node {$S_{*}$};
+		%3列目の３番目からの矢印
+		\draw [->] (S4)++(20:0.5cm) --++(20:0.5cm);
+		\draw [->] (S4)++(0:0.5cm) --++(0:0.5cm);
+		\draw [->] (S4)++(-20:0.5cm) --++(-20:0.5cm);
+		%==================================================================================================================
+		%2列目の3番目
+		\coordinate (S) at ($(S1) + (0, -2)$);
+		\draw [blue!50, ->] ($(O)!0.5cm!0:(S)$) -- ($(S)!0.5cm!0:(O)$);
+		\draw [fill = blue!50] (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		\draw ($(S) + (0, 0.5)$) node [above] {$A_{3}$};
+		%2列目の3番目から3列目へ
+		\draw [->, red!50] ($(S)!0.5cm!0:(S2)$) -- ($(S2)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S3)$) -- ($(S3)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%2列目の4番目
+		\coordinate (S) at ($(S) + (0, -2)$);
+		\draw [blue!50, ->] ($(O)!0.5cm!0:(S)$) -- ($(S)!0.5cm!0:(O)$);
+		\draw [fill = blue!50] (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%2列目の4番目から3列目へ
+		\draw [->] ($(S)!0.5cm!0:(S3)$) -- ($(S3)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%==================================================================================================================
+		%==================================================================================================================
+		%右半分
+		%1列目一番上
+		\coordinate (S) at ($(S3) + (4, 3)$);
+		\draw [<-] (S)++(160:0.5) --++(160:0.5);
+		\draw [<-] (S)++(180:0.5) --++(180:0.5);
+		\draw [<-] (S)++(200:0.5) --++(200:0.5);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%==================================================================================================================
+		%Si
+		\draw [->] (S)++(-30:0.5) -- ++(-30:2) node (Si) {};
+		\coordinate (Si) at ($(Si)!0.5cm!180:(S)$);
+		\draw (Si) circle [radius = 0.5];
+		\draw (Si) node {$S_{i}$};
+		\draw [->] (Si)++(20:0.5) --++(20:0.5);
+		\draw [->] (Si)++(0:0.5) --++(0:0.5);
+		\draw [->] (Si)++(-20:0.5) --++(-20:0.5);
+		%==================================================================================================================
+		%2列目の2番目
+		\coordinate (S4) at ($(Si) + (0, -2)$);
+		\draw (S4) circle [radius = 0.5];
+		\draw (S4) node {$S_{*}$};
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		\draw [->] (S4)++(20:0.5) -- ++(20:0.5);
+		\draw [->] (S4)++(0:0.5) -- ++(0:0.5);
+		\draw [->] (S4)++(-20:0.5) -- ++(-20:0.5);
+		%==================================================================================================================
+		%1列目2番目
+		\coordinate (S) at ($(S) + (0, -2)$);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{i - 1}$};
+		\draw [<-] (S)++(160:0.5) --++(160:0.5);
+		\draw [<-] (S)++(180:0.5) --++(180:0.5);
+		\draw [<-] (S)++(200:0.5) --++(200:0.5);
+		\draw [->] ($(S)!0.5cm!0:(Si)$) -- ($(S)!0.8!0:(Si)$);
+		%2番目への矢印
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%2列目の3番目
+		\coordinate (S5) at ($(S4) + (0, -2)$);
+		\draw (S5) circle [radius = 0.5];
+		\draw (S5) node {$S_{*}$};
+		\draw [->] ($(S)!0.5cm!0:(S5)$) -- ($(S5)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%1列目の3番目
+		\coordinate (S) at ($(S) + (0, -2)$);
+		\draw [<-] (S)++(160:0.5) --++(160:0.5);
+		\draw [<-] (S)++(180:0.5) --++(180:0.5);
+		\draw [<-] (S)++(200:0.5) --++(200:0.5);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%2列目への矢印
+		\draw [->] ($(S)!0.5cm!0:(Si)$) -- ($(Si)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%1列目の4番目	
+		\coordinate (S) at ($(S) + (0, -2)$);
+		\draw [<-] (S)++(160:0.5) --++(160:0.5);
+		\draw [<-] (S)++(180:0.5) --++(180:0.5);
+		\draw [<-] (S)++(200:0.5) --++(200:0.5);
+		\draw (S) circle [radius = 0.5];
+		\draw (S) node {$S_{*}$};
+		%2列目への矢印
+		\draw [->] ($(S)!0.5cm!0:(S4)$) -- ($(S4)!0.5cm!0:(S)$);
+		\draw [->] ($(S)!0.5cm!0:(S5)$) -- ($(S5)!0.5cm!0:(S)$);
+		%==================================================================================================================
+		%Goal
+		\draw ($(S4) + (2, 0)$) node (SG) {・・・};
+		\coordinate (SG) at ($(SG) + (1, 1)$);
+		\draw (SG) circle [radius = 0.5];
+		\draw (SG) node {$S_{G}$};
+		\draw [<-] (SG)++(160:0.5) --++(160:0.5);
+		\draw [<-] (SG)++(180:0.5) --++(180:0.5);
+		\draw [<-] (SG)++(200:0.5) --++(200:0.5);
+	\end{tikzpicture}
+\end{center}
+
+この時、$A_{i}$に続く状態Bへの$A_{i}$経由の最適政策のコストは$A_{i}$への最適コスト（求まっているとする。）
+と$A_{i}$からBへのコストの和となる。
+\begin{eqnarray*}
+	\rm Optimalcost(S_{0} \rightarrow A_{i} \rightarrow B) = Optimalcost(S_{0} \rightarrow A_{i}) + Cost(A_{i} \rightarrow B)
+\end{eqnarray*}
+よって、$S_{0}$から$B$への最適コストは以下のようになる。
+\begin{eqnarray*}
+	\rm Optimalcost(S_{0} \rightarrow B) = max [ Optimalcost(S_{0} \rightarrow A_{i} \rightarrow B)]
+\end{eqnarray*}
+\section{HMM}
+HMMには以下の2種類が存在する。
+\begin{enumerate}
+	\item エルゴディックHMM：既約で（どこへでも状態遷移できる）で周期的でないHMM
+	\item left-to-right HMM:帰還ループを持たない（一度ある状態を抜けたなら、二度とその状態には戻ってこない）HMM
+\end{enumerate}
+音響モデルとしては確率分布を切り替えながら時系列を生成するものとモデル化できるため、left-to-right HMMが用いられる。\\
+また、音声の場合は必ず一定のものではなく、動的で連続的な特徴ベクトルの集合であるため、確率分布から確率分布への遷移の軌跡を表すことができるという点でleft-to-right HMMは用いられている。\\
+基本的にデータが与えられて、このモデルに沿ったHMMが与えられている際にそれぞれのデータがどの確率分布から出てきたかの割り当ては対応付けの数だけありうるため、組み合わせ爆発を起こしてしまう。\\
+そのため、経路問題のような感じで効率的に確率計算を行うことを考える。その時に用いられるアルゴリズムを2つ紹介する。
+\subsection{フォワードアルゴリズム}
+HMMモデルにおけるデータ$x_{1} ~ x_{T}$までが出力される確率を表す。
+そのため、以下のような漸化式を用いて求められる。
+\begin{eqnarray*}
+	\alpha(t, j) = \sum_{k} \alpha(t - 1, k)a_{kj}b_{j}(x_{t})
+\end{eqnarray*}
+$a_{kj}$は状態$k$から状態$j$への遷移確率であり、$b_{j}(x_{t})$は状態$j$において$x_{t}$が出現する確率であり、
+$\alpha(t, j)$は時刻$t$までに$x_{1} ~ x_{t}$を出力して状態$j$に至る確率である。
+よって、最終的な確率は以下のようになる。
+\begin{eqnarray*}
+	{\rm Pr}(x_{1}, ...x_{T}) = \sum_{k} \alpha(T, k)
+\end{eqnarray*}
+\subsection{ビタビアルゴリズム}
+このアルゴリズムは最適な状態遷移が生じた場合の出力確率を求めるアルゴリズムである。そのため、
+総和を求めるのではなく、最適な一つのパスのみを求めるものである。
+以下の式で表される。
+\begin{eqnarray*}
+	\alpha(t, j) = \underset{k}{\rm max} \alpha(t - 1, k)a_{kj}b_{j}(x_{t})
+\end{eqnarray*}
+よって、最終的な確率は以下のように表される。
+\begin{eqnarray*}
+	{\rm Pr}(x_{1}, ..., x_{T}) = \underset{k}{\rm max} \alpha(T, k)
+\end{eqnarray*}
+\section{参考文献}
+\small
+\bibliographystyle{ieeetr}
+\nocite{*}
+\bibliography{myreferences.bib}
+\end{document}

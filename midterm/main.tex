@@ -5,15 +5,74 @@
 
 % パッケージと呼ばれるオプションをつける.
 \usepackage{color} %色のオプション
-\usepackage{listings}
-\usepackage{amsmath}
-\usepackage{ascmac}
-\usepackage{amsmath,amssymb}
-\usepackage{enumerate}
-\usepackage{tikz}
 \usepackage{graphicx}
-\usepackage{here}
+\usepackage{listings, jlisting}%ソースコード表示のため(jlistingは日本語用listingsだけでは日本語表記がおかしくなるため)
+\usepackage{titlesec}%タイトル文字調整用
+\usepackage{url}%URL参考文献載せる用
+\usepackage{multirow}%表の縦結合のため
+\usepackage{here}% 強制的にコードの位置に図を挿入のため
+\usepackage{amsmath, amssymb}%underset therfore
+\usepackage{enumerate}%任意の番号を付けるためのもの\begin{enumerate}[(a)]みたいな感じで(a), (b)となる
+\usepackage{textcomp}%textlessなど
+\usepackage[T1]{fontenc}
+\usepackage{color} %色のオプション
+\usepackage{ascmac}
+\usepackage{tikz}
+\usetikzlibrary{intersections, calc}
 \usepackage{bm}
+\usepackage{threeparttable}
+
+\newcommand{\myrectangle}[2]{\draw ($#1 + (-#2, -#2)$) rectangle ($#1 + (#2, #2)$)}%四角形
+\newcommand{\mytriangle}[2]{\draw ($#1 + (-#2*1.73 / 2, -#2 / 2)$) --++(0:1.73*#2) --++(120:1.73*#2) --cycle}%三角形
+%------------------------------------------------------------------------------------------------------------------
+\titleformat*{\section}{\normalsize\mcfamily}%章のタイトルの文字の大きさを通常サイズに設定（明朝体で）
+\titlespacing*{\section}{0pt}{*0}{0pt}%章番号の後の空白行の削除
+\titleformat*{\subsection}{\normalsize\mcfamily}%節のタイトルの文字の大きさを通常サイズに設定（明朝体で）
+\titlespacing*{\subsection}{0pt}{*0}{0pt}%節番号の後の空白行の削除
+\titleformat*{\subsubsection}{\normalsize\mcfamily}%小節のタイトルの文字の大きさを通常サイズに設定（明朝体で）
+\titlespacing*{\subsubsection}{0pt}{*0}{0pt}%小節番号の後の空白行の削除
+%------------------------------------------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------------------------------------------
+%ソースコードから図に名前を変更
+\makeatletter
+\renewcommand{\lstlistingname}{図}
+\makeatother
+%------------------------------------------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------------------------------------------
+%章番号付きコード番号
+\makeatletter
+\AtBeginDocument{
+  \renewcommand*{\thelstlisting}{\arabic{section}.\arabic{lstlisting}}%
+  \@addtoreset{lstlisting}{section}
+}
+\makeatother
+
+%章番号付き表番号
+\makeatletter
+\renewcommand{\thetable}{
+\thesection.\arabic{table}
+}
+\@addtoreset{figure}{section}
+\makeatother
+
+%章番号付き図番号
+\makeatletter
+\renewcommand{\thefigure}{
+	\thesection.\arabic{figure}
+}
+\@addtoreset{figure}{section}
+\makeatother
+
+%章番号付き式番号
+\makeatletter
+\renewcommand{\theequation}{
+    \thesection.\arabic{equation}
+}
+\@addtoreset{equation}{section}
+\makeatother
+
 
 % ソースコードを貼る詳細設定
 \lstset{
@@ -40,7 +99,7 @@
  	%frameまでの間隔(行番号とプログラムの間)
  	framesep = 5pt,
  	%行番号の位置
- 	numbers = left,
+ 	% numbers = left,
 	%行番号の間隔
  	stepnumber = 1,
 	%右マージン
