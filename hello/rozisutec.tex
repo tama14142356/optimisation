@@ -1,0 +1,58 @@
+\subsection{ロジスティック回帰}
+\input{rozisutec/rozisutec_kaiki.tex}
+\subsection{勾配法}
+\input{rozisutec/koubai.tex}
+\subsubsection{共役勾配法}
+\input{rozisutec/kyouyaku.tex}
+\subsubsection{ニュートン法}
+ニュートン法とは勾配だけでなく, ヘシアン(スカラにおける2次微係数に相当する量)も使って, 近似解の変更の方向と量を決定する方法である.\\
+2次式の最小化問題の場合は以下のように考えることができる.
+\begin{center}
+    \begin{tikzpicture}[>=stealth]
+        \draw[->](0,-0.3)--(0,4)node [above] {$f$};
+        \draw[->](-0.3,0)--(6,0)node[right]{$x$};
+        \draw[dashed] (2.5,-0.3)--(2.5,4);
+        \draw[draw=blue,very thick,domain=-0.3:5.3] plot (\x,{(\x-2.5)*(\x-2.5)/3+0.5});
+        \fill[fill=red] (2.5,0.5) circle [radius=0.1];
+        \node at(2.5,2) {$x^{*}=\underset{x}{\rm argmin} f(x)$};
+    \end{tikzpicture}
+
+    \begin{tikzpicture}[>=stealth]
+        \draw[->](0,-2)--(0,3)node [above] {$f'$};
+        \draw[->](-0.3,0)--(6,0)node[right]{$x$};
+        \draw[dashed] (2.5,-2)--(2.5,3);
+        \draw (5,1.176) to [out=90,in=330] (4.9,1.4112);
+        \draw[very thick,draw=orange,domain=0:6] plot (\x,{0.588*\x-1.47});
+        \fill[fill=orange] (2.5,0) circle[radius=0.07];
+        \node at(2.7,-0.2) {$x^{*}$};
+        \node at(2.5,0.5) {$f'(x^{*}=0)$};
+        \draw[->,thick,draw=green] (4.5,0)--(4.5,1.176);
+        \fill[fill=orange] (4.5,0) circle[radius=0.07];
+        \node at(4.5,-0.25) {$x_{0}$};
+        \draw[dashed,draw=orange] (4.5,1.176)--(6,1.176);
+        \node at(4.3,1.5) {$f'(x_{0})$};
+        \node at(5.5,0.85) {$f''(x_{0})$};
+    \end{tikzpicture}
+\end{center}
+これによりニュートン法の最小化の近似値は
+\begin{align*}
+    x^{*}=x_{0}-\frac{1}{f''(x_{0})}f'(x_{0}) \tag{3.6}
+\end{align*}
+一般の場合のニュートン法では2次式を仮定して傾きを元に極値の位置を推定していく. しかし導関数によっては発散してしまう可能性がある.\\
+多変数のニュートン法では以下のヘッセ行列(ヘシアン, ヘシアン行列)
+となる.
+\begin{align*}
+    H(\mbox{\boldmath $x$}_{0})=\begin{pmatrix} \displaystyle \frac{\partial^{2}f(\mbox{\boldmath $x$}_{0})}{\partial x_{1}x_{1}}&\displaystyle  \frac{\partial^{2}f(\mbox{\boldmath $x$}_{0})}{\partial x_{1} \partial x_{2}} \\ \displaystyle \frac{\partial^{2}f(\mbox{\boldmath $x$}_{0})}{\partial x_{2} \partial x_{1}} &\displaystyle \frac{\partial^{2}f(\mbox{\boldmath $x$}_{0})}{\partial x_{2} \partial x_{2}} \end{pmatrix}
+\end{align*}
+微小量の変化したときの変化量が0となればよいので
+\begin{eqnarray*}
+    \frac{\partial}{\partial \mbox{\boldmath $x$}}f(\mbox{\boldmath $x$}_{0}+\Delta \mbox{\boldmath $x$})&=&\nabla f(\mbox{\boldmath $x$}_{0})+H(\mbox{\boldmath $x$}_{0})\Delta \mbox{\boldmath $x$}=0\\
+    \Delta \mbox{\boldmath $x$} &=& -H(\mbox{\boldmath $x$}_{0})^{-1}\nabla f(\mbox{\boldmath $x$}_{0})\\
+    x^{*}&=&x_{0}-H(\mbox{\boldmath $x$}_{0})^{-1}\nabla f(\mbox{\boldmath $x$}_{0})\ \ (2次系の場合は即最適解)
+\end{eqnarray*}
+一般の場合は漸化式で
+\begin{align*}
+    x_{i+1}=x_{i}-H(\mbox{\boldmath $x$}_{i})^{-1}\nabla f(\mbox{\boldmath $x$}_{i})
+\end{align*}
+となる.\\\\
+勾配法においては, 得られる解は初期値に依存する.

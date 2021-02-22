@@ -80,7 +80,7 @@
  	language = Python,
  	%枠外に行った時の自動改行
  	breaklines = true,
- 	%自動開業後のインデント量(デフォルトでは20[pt])	
+ 	%自動開業後のインデント量(デフォルトでは20[pt])
  	breakindent = 11pt,
  	%標準の書体
  	basicstyle = \ttfamily\small,
@@ -118,7 +118,7 @@
 \author{}
 
 \begin{document}
-\maketitle 
+\maketitle
 \section{導入}
 最適化とは
 \begin{eqnarray*}
@@ -622,7 +622,7 @@ $\alpha$の決め方は様々であり, $-\nabla f(\mbox{\boldmath $x$})$の最�
         \draw[->,very thick,draw=blue] (-3.9,-1.4)--(2,-1.4);
         \draw[->,very thick,draw=blue] (-2.3,-2.6)--(0.5,3);
 
-        \draw[->,very thick,draw=orange](-1.7,-1.4)--(-1.2,-0.4); 
+        \draw[->,very thick,draw=orange](-1.7,-1.4)--(-1.2,-0.4);
         \draw[fill=magenta] (-3,-1.4) circle[radius=0.1];
         \draw[fill=magenta] (-1.7,-1.4) circle[radius=0.1];
         \node at(-3.2,-1.7) {$-\nabla f(\mbox{\boldmath $x$}_{0})$};
@@ -775,7 +775,7 @@ $\Lambda$は対角行列であるのでその平方根である$\Lambda^{\frac{1
 \end{center}
 これに加えて$\mbox{\boldmath $z$}$に関して,
 \begin{eqnarray*}
-    \begin{pmatrix}z_{1}\\z_{2}\end{pmatrix}=\begin{pmatrix}\sqrt{\mbox{\boldmath $\lambda$}_{1}}y_{1}\\\sqrt{\mbox{\boldmath $\lambda$}_{1}}y_{1}\end{pmatrix} 
+    \begin{pmatrix}z_{1}\\z_{2}\end{pmatrix}=\begin{pmatrix}\sqrt{\mbox{\boldmath $\lambda$}_{1}}y_{1}\\\sqrt{\mbox{\boldmath $\lambda$}_{1}}y_{1}\end{pmatrix}
 \end{eqnarray*}
 となるので固有値の平方根をとることで$Z$についての平面は以下のようになる.
 \begin{center}
@@ -834,7 +834,7 @@ $\Lambda$は対角行列であるのでその平方根である$\Lambda^{\frac{1
         \node at(-0.7,0.3) {$\mbox{\boldmath $x$}_{a}$};
         \node at(1,0) {$\mbox{\boldmath $x$}_{b}$};
     \end{tikzpicture}
-\end{center}                       
+\end{center}
 円については座標変換後の円が
 \begin{eqnarray*}
     \mbox{\boldmath $z$}^{T}\cdot \mbox{\boldmath $z$} = {\rm const}
@@ -953,7 +953,7 @@ $\mbox{\boldmath $p$}_{i}$は, $\mbox{\boldmath $p$}_{j}\ (j\neq i)$は共役で
 とおいて, これが$\mbox{\boldmath $p$}_{k}$と共役となるように定める.\\
 このとき, $\alpha_{k}$は以下の等式を満たす.
 \begin{eqnarray*}
-    \mbox{\boldmath $p$}_{k}^{T}A\mbox{\boldmath $p$}_{k+1}=\mbox{\boldmath $p$}_{k}^{T}A(\mbox{\boldmath $r$}_{k}+\alpha_{k}\mbox{\boldmath $p$}_{k})=\mbox{\boldmath $p$}_{k}^{T}A\mbox{\boldmath $r$}_{k}+\alpha_{k}\mbox{\boldmath $p$}_{k}^{T}\mbox{\boldmath $p$}_{k}=0 
+    \mbox{\boldmath $p$}_{k}^{T}A\mbox{\boldmath $p$}_{k+1}=\mbox{\boldmath $p$}_{k}^{T}A(\mbox{\boldmath $r$}_{k}+\alpha_{k}\mbox{\boldmath $p$}_{k})=\mbox{\boldmath $p$}_{k}^{T}A\mbox{\boldmath $r$}_{k}+\alpha_{k}\mbox{\boldmath $p$}_{k}^{T}\mbox{\boldmath $p$}_{k}=0
 \end{eqnarray*}
 したがって
 \begin{eqnarray*}
@@ -961,7 +961,7 @@ $\mbox{\boldmath $p$}_{i}$は, $\mbox{\boldmath $p$}_{j}\ (j\neq i)$は共役で
 \end{eqnarray*}
 よって, 求める第$k+1$次の基底は
 \begin{eqnarray*}
-    \mbox{\boldmath $p$}_{k+1}=\mbox{\boldmath $r$}_{k}+\alpha_{k}\mbox{\boldmath $p$}_{k}=\mbox{\boldmath $r$}_{k}-\frac{\mbox{\boldmath $p$}_{k}^{T}A\mbox{\boldmath $r$}_{k}}{\mbox{\boldmath $p$}_{k}^{T}A\mbox{\boldmath $p$}_{k}}\mbox{\boldmath $p$}_{k} 
+    \mbox{\boldmath $p$}_{k+1}=\mbox{\boldmath $r$}_{k}+\alpha_{k}\mbox{\boldmath $p$}_{k}=\mbox{\boldmath $r$}_{k}-\frac{\mbox{\boldmath $p$}_{k}^{T}A\mbox{\boldmath $r$}_{k}}{\mbox{\boldmath $p$}_{k}^{T}A\mbox{\boldmath $p$}_{k}}\mbox{\boldmath $p$}_{k}
 \end{eqnarray*}
 と求まる. さらに, これを用いて$\mbox{\boldmath $x$}_{k+1}$を
 \begin{eqnarray*}
@@ -1008,7 +1008,7 @@ $\mbox{\boldmath $p$}_{i}$は, $\mbox{\boldmath $p$}_{j}\ (j\neq i)$は共役で
 多変数のニュートン法では以下のヘッセ行列(ヘシアン, ヘシアン行列)
 となる.
 \begin{align*}
-    H(\mbox{\boldmath $x$}_{0})=\begin{pmatrix} \displaystyle \frac{\partial^{2}f(\mbox{\boldmath $x$}_{0})}{\partial x_{1}x_{1}}&\displaystyle  \frac{\partial^{2}f(\mbox{\boldmath $x$}_{0})}{\partial x_{1} \partial x_{2}} \\ \displaystyle \frac{\partial^{2}f(\mbox{\boldmath $x$}_{0})}{\partial x_{2} \partial x_{1}} &\displaystyle \frac{\partial^{2}f(\mbox{\boldmath $x$}_{0})}{\partial x_{2} \partial x_{2}} \end{pmatrix} 
+    H(\mbox{\boldmath $x$}_{0})=\begin{pmatrix} \displaystyle \frac{\partial^{2}f(\mbox{\boldmath $x$}_{0})}{\partial x_{1}x_{1}}&\displaystyle  \frac{\partial^{2}f(\mbox{\boldmath $x$}_{0})}{\partial x_{1} \partial x_{2}} \\ \displaystyle \frac{\partial^{2}f(\mbox{\boldmath $x$}_{0})}{\partial x_{2} \partial x_{1}} &\displaystyle \frac{\partial^{2}f(\mbox{\boldmath $x$}_{0})}{\partial x_{2} \partial x_{2}} \end{pmatrix}
 \end{align*}
 微小量の変化したときの変化量が0となればよいので
 \begin{eqnarray*}
@@ -1045,7 +1045,7 @@ $\mbox{\boldmath $p$}_{i}$は, $\mbox{\boldmath $p$}_{j}\ (j\neq i)$は共役で
     \node at(-1,-2) {$x_{7}$};
     \node at(-1.5,-3) {$x_{9}$};
     \node at(-3.2,-2.5) {$x_{5}$};
-  \end{tikzpicture}  
+  \end{tikzpicture}
 \end{center}
 \item 分布を元にクラスの境界を定める.
 \begin{center}
@@ -1214,7 +1214,7 @@ $\mbox{\boldmath $p$}_{i}$は, $\mbox{\boldmath $p$}_{j}\ (j\neq i)$は共役で
   \end{center}
   入力データ($x_{i}$)に対して線形識別における座標変換すると
   \begin{eqnarray*}
-  y_{i}=\mbox{\boldmath $w$}^{T}\mbox{\boldmath $x$}_{i}  
+  y_{i}=\mbox{\boldmath $w$}^{T}\mbox{\boldmath $x$}_{i}
   \end{eqnarray*}
   これに対してロジスティック回帰を適用させると
   \begin{align*}
@@ -1621,7 +1621,7 @@ Lagrangeの未定乗数法より
 とおいて, $\displaystyle \frac{\partial J_{m}}{\partial \bm{w}_{m}}=0$とおくと,
 \begin{eqnarray*}
     &&2C_{\bm{w}_{m}}-2\lambda_{m}\bm{w}-\sum_{k=1}^{m-1}\mu_{k}\bm{w}_{k}=0\\
-   \Longleftrightarrow\ && C_{\bm{w}}-\lambda_{m}\bm{w}_{m}-\sum_{k=1}^{m-1}\mu_{k}\bm{w}_{k}=0 
+   \Longleftrightarrow\ && C_{\bm{w}}-\lambda_{m}\bm{w}_{m}-\sum_{k=1}^{m-1}\mu_{k}\bm{w}_{k}=0
 \end{eqnarray*}
 ここで$\mu_{k}$について$\mu_{k}=\frac{1}{2}\mu_{k}$として再定義.\\
 左から$\bm{w}_{j}^{T}\,(j=1,2,3,\cdots,m-1)$をかけると,($\bm{w}_{k}^{T}\bm{w}_{k'(k' \neq k)}=0$を考慮して)
@@ -1632,7 +1632,7 @@ Lagrangeの未定乗数法より
 となる. また
 \begin{eqnarray*}
     \bm{w}_{j}^{T}C\bm{w}_{m}&=&\bm{w}_{m}^{T}C\bm{w}_{j}\\
-                             &=&\lambda_{j}\bm{w}_{m}^{T}\bm{w}_{j}=0\ (j=1,2,\cdots,m-1) 
+                             &=&\lambda_{j}\bm{w}_{m}^{T}\bm{w}_{j}=0\ (j=1,2,\cdots,m-1)
 \end{eqnarray*}
 であることから
 \begin{eqnarray*}
@@ -1680,7 +1680,7 @@ Lagrangeの未定乗数法より
         \draw[->,draw=blue,thick] (3.8,0.63)--(3.4,0.815);
         \filldraw[fill=white] (0,0) circle[radius=0.05];
         \filldraw[fill=white] (3,1) circle[radius=0.05];
-        \filldraw[fill=white] (3.8,0.63) circle[radius=0.05]; 
+        \filldraw[fill=white] (3.8,0.63) circle[radius=0.05];
         \filldraw[fill=white] (0.2,-0.4) circle[radius=0.05];
         \filldraw[fill=white] (0.5,-0.25) circle[radius=0.05];
     \end{tikzpicture}
@@ -1867,7 +1867,7 @@ $\Rightarrow$ Locality Preserving Projection\\[1cm]
 ここで,
 \begin{eqnarray*}
     w_{ij}=\left\{ \begin{array}{l} 1 \ \bm{x}_{i}と\bm{x}_{j}が違うクラス\\ 0\ \ \bm{x}_{i}と\bm{x}_{j}が同じクラス\end{array} \right.\\
-    v_{ij}=\left\{ \begin{array}{l} 1 \ \bm{x}_{i}と\bm{x}_{j}が違うクラス\\ 0\ \ \bm{x}_{i}と\bm{x}_{j}が同じクラス\end{array} \right.   
+    v_{ij}=\left\{ \begin{array}{l} 1 \ \bm{x}_{i}と\bm{x}_{j}が違うクラス\\ 0\ \ \bm{x}_{i}と\bm{x}_{j}が同じクラス\end{array} \right.
 \end{eqnarray*}
 として, $E$を最大化すれば, $LDA$と等価である.
 \subsection{重み付き分散比とCDDA(クラス間距離を考慮した判別分析)}

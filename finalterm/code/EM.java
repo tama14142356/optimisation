@@ -1,7 +1,7 @@
 class EM {
     static final int data[] = { 8, 3, 6, 9, 7, 6, 2, 6, 4, 4, 5, 7 };
     static Boal boal[];
-    static final String moji[] = {"A", "B", "C"};
+    static final String moji[] = { "A", "B", "C" };
 
     static class Boal {
         double plist[];
@@ -65,12 +65,12 @@ class EM {
         }
 
         // for (int i = 0; i < 3; ++i) {
-        //     System.out.println(moji[i]);
-        //     for (double p : boal[i].plist2)
-        //         System.out.print(p + " ");
-        //     System.out.println();
+        // System.out.println(moji[i]);
+        // for (double p : boal[i].plist2)
+        // System.out.print(p + " ");
+        // System.out.println();
         // }
-        
+
         double sum2 = 0.0;
         sum = 0.0;
         for (int i = 0; i < 3; ++i) {
@@ -96,9 +96,10 @@ class EM {
             }
             boal[i].sigma = sum2 / sum;
         }
-        // System.out.println("         P()               mu                   sigma");
+        // System.out.println(" P() mu sigma");
         // for (int i = 0; i < 3; ++i) {
-        //     System.out.println(moji[i] + ":" + boal[i].p + "|" + boal[i].mu + "|" + boal[i].sigma);
+        // System.out.println(moji[i] + ":" + boal[i].p + "|" + boal[i].mu + "|" +
+        // boal[i].sigma);
         // }
         return expect();
     }
@@ -114,10 +115,10 @@ class EM {
         for (int i = 0; i < 1000; ++i) {
             double e = update();
             if (Math.abs(e - l) < d)
-            break;
+                break;
             l = e;
         }
-        
+
         System.out.println("         P()                     mu                 sigma");
         for (int i = 0; i < 3; ++i) {
             System.out.println(moji[i] + " : " + boal[i].p + " | " + boal[i].mu + " | " + boal[i].sigma);

@@ -1,0 +1,26 @@
+最適化とは
+\begin{eqnarray*}
+  \Psi (\theta)\ &:&\ 目的関数\\
+  \theta\ &:&\ パラメータ
+\end{eqnarray*}
+としたとき, $\Psi(\theta)$を$\theta$で最小化(あるいは最大化)することである.\ つまり\\
+\centerline{\textcolor{red}{\large 関数の最小値, 最大値を与える$x$をもとめる問題}}\\
+ということである.
+\begin{center}
+  \begin{tikzpicture}[>=stealth]
+    \draw[->] (-0.7,0)--(4.5,0) node[right] {$x$};
+    \draw[->] (0,-0.3)--(0,4.5) node[above] {$y$};
+    \draw [domain=-0.3:3.4] plot(\x,{0.5*\x*\x-\x+1.5});
+    \draw[draw=red,->,thick] (1,0)--(1,1);
+    \draw[dashed] (1,0)--(1,0) node[below] {$x_{0}$};
+    \draw[dashed] (1,1)--(0,1) node[left] {$f_{0}$};
+    \node at (-0.5,2.2) {$f(x)$};
+  \end{tikzpicture}
+\end{center}
+  このときの
+\begin{eqnarray*}
+    f_{0}&=&\underset{x}{\rm min}\,f(x)\\
+    x_{0}&=&\underset{x}{\rm argmin}\,f(x)
+\end{eqnarray*}
+を求める問題である.
+$\theta$が関数の形状を決めるパラメータであったとき, 目的関数$\Psi(\theta)$は近似誤差を表す関数となり, 最適化は関数$f(x;\theta)$の形状を求める問題といえる.
